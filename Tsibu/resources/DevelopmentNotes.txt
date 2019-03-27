@@ -1,0 +1,19 @@
+#
+# Hardware
+#
+
+https://projects.raspberrypi.org/en/projects/raspberry-pi-setting-up/3
+Setting up Raspberry Pi
+
+https://raspberry-projects.com/pi/programming-in-c/i2c/using-the-i2c-interface
+Using an I2C interface on the Raspberry Pi
+
+https://learn.adafruit.com/adafruits-raspberry-pi-lesson-10-stepper-motors/software
+Python code for a stepper motor
+
+https://pimylifeup.com/raspberry-pi-light-sensor/
+Hooking up photoresistors
+
+#
+# Software
+#

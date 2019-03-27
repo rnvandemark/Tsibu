@@ -1,0 +1,30 @@
+#
+# Purchased
+#
+
+https://www.amazon.com/CanaKit-Raspberry-Power-Supply-Listed/dp/B07BC6WH7V/ref=sr_1_fkmrnull_1?keywords=CanaKit+Raspberry+Pi+3+B%2B+%28B+Plus%29+with+2.5A+Power+Supply+%28UL+Listed%29&qid=1553040429&s=electronics&sr=1-1-fkmrnull
+A Raspberry Pi 3 B+, the "brains" of the robot (this is essentially a mini computer)
+Waiting on delivery
+
+https://www.amazon.com/gp/product/B06XX29S9Q/ref=ppx_od_dt_b_asin_title_s00?ie=UTF8&psc=1
+A 64GB MicroSD Card
+Waiting on delivery
+
+https://www.amazon.com/gp/product/B079M96KWZ/ref=ppx_yo_dt_b_asin_title_o01_s00?ie=UTF8&psc=1
+A Raspberry Pi 3 B+ case, with cooling and heatsink
+Waiting on delivery
+
+https://www.amazon.com/Battery-Pack-Raspberry-4000mAh-Suction/dp/B07BSG7V3J/?creativeASIN=B07BSG7V3J&linkCode=w50&tag=mak041-20&imprToken=8G6HCC0nX4tFAqbiVdsAGg&slotNum=5
+A Raspberry Pi 3 B+ battery pack, so the robot can be mobile
+Waiting on delivery
+
+https://www.amazon.com/gp/product/B016D737Y4/ref=as_li_ss_tl?ie=UTF8&linkCode=ll1&tag=pimylifeup-20&linkId=918ac7f532e4dc24704992dccfa92561&language=en_US
+20-Pack of Digital Light-Dependent Resistor (Photoresistor)
+Waiting on delivery
+
+#
+# Still Needed
+#
+
+Motors
+Motor Controllers
