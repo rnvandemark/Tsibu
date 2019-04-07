@@ -2,7 +2,7 @@ all: bin/Tsibu.o
 
 bin/Tsibu.o: main/TsibuMain.cpp
 	mkdir -p bin/
-	g++ main/TsibuMain.cpp -I include/ -std=c++11 -o bin/Tsibu.o
+	g++ -pthread main/TsibuMain.cpp src/hunger/src/HungerLevelController.cpp -I src/common/include/,src/hunger/include/ -std=c++11 -o bin/Tsibu.o
 
 clean:
 	rm -f -r bin/
