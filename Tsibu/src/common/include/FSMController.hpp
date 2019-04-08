@@ -8,8 +8,9 @@
 #include <mutex>
 #include <chrono>
 
-#include "FSMInput.hpp"
+#include "FSMVariable.hpp"
 #include "FSM.hpp"
+#include "FSMSystemCommunicator.hpp"
 
 /*
  *  This class represents the base implementation of a tool to handle the logic of handling an FSM's program flow.
@@ -50,15 +51,25 @@ class FSMController
 		 */
 		void spin_routine()
 		{
-		  std::chrono::milliseconds wait_time(ms_reevaluate_rate);
-
-		  while (keep_spin_routine_alive)
+		  std::chrono::system_clock::time_point time_sleep_start;
+		  while (true)
 		  {
-		    std::this_thread::sleep_for(wait_time);
+				time_sleep_start = std::chrono::system_clock::now();
+		    while (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - time_sleep_start).count() < ms_reevaluate_rate)
+				{
+					if (!keep_spin_routine_alive)
+					{
+						return;
+					}
+
+					std::this_thread::sleep_for(std::chrono::milliseconds(1));
+				}
+
+				update_inputs();
 
 		    if (process())
 		    {
-		      std::cout << "[" << name << "] State changed to " << static_cast<int>(*(fsm.get_current_state())) << std::endl;
+		      std::cout << "[" << name << "] State changed to " << static_cast<int>(*(fsm->get_current_state())) << std::endl;
 		    }
 		  }
 		}
@@ -68,12 +79,17 @@ class FSMController
 		/*
 		 *  The finite state machine that this object will manage.
 		 */
-		FSM<T> fsm;
+		FSM<T>* fsm;
 
 		/*
 		 *  Tracks the rate at which the FSM should run through its reevaluation routine.
 		 */
 		int ms_reevaluate_rate;
+
+		/*
+		 *  The FMS system communicator for this FSM controller.
+		 */
+		FSMSystemCommunicator* fsm_system_communicator;
 
 		/*
 		 *  Perform necessary initialization for this controller or the FSM it owns.
@@ -96,14 +112,26 @@ class FSMController
 		/*
 		 *  The constructor.
 		 *  @param n The user-friendly name of this controller.
-		 *  @param f A finite state machine for the paramaterized type
+		 *  @param f A finite state machine for the paramaterized type.
 		 *  @param msrr The rate at which state is reevaluated, in milliseconds.
+		 *  @param fsc The system communicator that can contact other FSM instances to observe their current states.
 		 */
-		explicit FSMController(std::string n, FSM<T> f, int msrr)
+		explicit FSMController(std::string n, FSM<T>* f, int msrr, FSMSystemCommunicator* fsc)
 		{
 		  name = n;
 		  fsm = f;
 		  ms_reevaluate_rate = msrr;
+			fsm_system_communicator = fsc;
+			fsm_system_communicator->add_FSM(name, dynamic_cast<BaseFSM*>(fsm));
+		}
+
+		/*
+		 *  The destructor.
+		 *  Frees memory for the FSM.
+		 */
+		~FSMController()
+		{
+		  delete fsm;
 		}
 
 		/*
@@ -124,6 +152,16 @@ class FSMController
 		  keep_spin_routine_alive = false;
 		  spin_routine_thread.join();
 		}
+
+    /*
+		 *  Template member function to get the current value of a FSM by its name.
+     *  @param name The name of the FSM of interest
+		 */
+    template <typename U>
+		U* get_current_state_of(std::string name)
+    {
+      return dynamic_cast<FSM<U>*>(fsm_system_communicator->get_base_FSM(name))->get_current_state();
+    }
 };
 
 #endif /* TSIBU_FSM_CONTROLLER_HPP */

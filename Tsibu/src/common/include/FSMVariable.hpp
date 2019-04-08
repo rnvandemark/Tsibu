@@ -1,16 +1,16 @@
-#ifndef TSIBU_FSM_INPUT_HPP
-#define TSIBU_FSM_INPUT_HPP
+#ifndef TSIBU_FSM_VARIABLE_HPP
+#define TSIBU_FSM_VARIABLE_HPP
 
 #include <stdexcept>
 
-#include "BaseFSMInput.hpp"
+#include "BaseFSMVariable.hpp"
 
 /*
  *  This class represents input to a finite state machine.
  *  The typename template is the type of data that is acting as the input.
  */
 template <typename T>
-class FSMInput : public BaseFSMInput
+class FSMVariable : public BaseFSMVariable
 {
 	private:
 
@@ -25,8 +25,8 @@ class FSMInput : public BaseFSMInput
 		 *  The main constructor.
 		 *  Creates a container with an initial value.
 		 */
-		explicit FSMInput(T* initial_value)
-			: BaseFSMInput()
+		explicit FSMVariable(T* initial_value)
+			: BaseFSMVariable()
 		{
 			value = initial_value;
 		}
@@ -35,14 +35,14 @@ class FSMInput : public BaseFSMInput
 		 *  The default constructor.
 		 *  Creates a container by calling the template typename's default constructor.
 		 */
-		explicit FSMInput()
-			: FSMInput(new T()) {}
+		explicit FSMVariable()
+			: FSMVariable(new T()) {}
 
 		/*
 		 *  The destructor.
 		 *  Frees the memory of the existing value.
 		 */
-		~FSMInput()
+		~FSMVariable()
 		{
 			if (value != nullptr)
 			{
@@ -88,4 +88,4 @@ class FSMInput : public BaseFSMInput
 		}
 };
 
-#endif /* TSIBU_FSM_INPUT_HPP */
+#endif /* TSIBU_FSM_VARIABLE_HPP */

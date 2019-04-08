@@ -1,5 +1,5 @@
-#ifndef TSIBU_HUNGER_LEVEL
-#define TSIBU_HUNGER_LEVEL
+#ifndef TSIBU_HUNGER_LEVEL_HPP
+#define TSIBU_HUNGER_LEVEL_HPP
 
 /*
  *  This describes the magnitude of hunger the AI is experiencing.
@@ -32,4 +32,4 @@ enum HungerLevel
   FAMISHED = 5
 };
 
-#endif /* TSIBU_HUNGER_LEVEL */
+#endif /* TSIBU_HUNGER_LEVEL_HPP */

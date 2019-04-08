@@ -1,20 +1,17 @@
-#ifndef TSIBU_HUNGER_LEVEL_CONTROLLER_HPP
-#define TSIBU_HUNGER_LEVEL_CONTROLLER_HPP
+#ifndef TSIBU_HUNGER_CHANGE_MAGNITUDE_CONTROLLER_HPP
+#define TSIBU_HUNGER_CHANGE_MAGNITUDE_CONTROLLER_HPP
 
-#include <chrono>
+// For random numbers
+#include <ctime>
 
 #include "../../common/include/FSMController.hpp"
-
-#include "HungerLevel.hpp"
-#include "HungerLevelConstants.hpp"
-
 #include "HungerChangeMagnitude.hpp"
 #include "HungerChangeMagnitudeConstants.hpp"
 
 /*
- *  This class represents the controller for the HungerLevel FSM.
+ *  This class represents the controller for the HungerChangeMagnitude FSM.
  */
-class HungerLevelController : public FSMController<HungerLevel>
+class HungerChangeMagnitudeController : public FSMController<HungerChangeMagnitude>
 {
   protected:
 
@@ -41,10 +38,10 @@ class HungerLevelController : public FSMController<HungerLevel>
     /*
 		 *  The constructor.
 		 *  Simply calls the base constructor.
-		 *  @param f The FSM for hunger level.
+		 *  @param f The FSM for hunger change magnitude.
 		 *  @param fsc The system communicator that can contact other FSM instances to observe their current states.
 		 */
-		explicit HungerLevelController(FSM<HungerLevel>* f, FSMSystemCommunicator* fsc);
+		explicit HungerChangeMagnitudeController(FSM<HungerChangeMagnitude>* f, FSMSystemCommunicator* fsc);
 };
 
-#endif /* TSIBU_HUNGER_LEVEL_CONTROLLER_HPP */
+#endif /* TSIBU_HUNGER_CHANGE_MAGNITUDE_CONTROLLER_HPP */
