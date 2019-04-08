@@ -51,11 +51,11 @@ class FSMController
 		 */
 		void spin_routine()
 		{
-		  std::chrono::system_clock::time_point time_sleep_start;
-		  while (true)
-		  {
+			std::chrono::system_clock::time_point time_sleep_start;
+			while (true)
+			{
 				time_sleep_start = std::chrono::system_clock::now();
-		    while (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - time_sleep_start).count() < ms_reevaluate_rate)
+				while (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - time_sleep_start).count() < ms_reevaluate_rate)
 				{
 					if (!keep_spin_routine_alive)
 					{
@@ -67,9 +67,9 @@ class FSMController
 
 				update_inputs();
 
-		    if (process())
+			if (process())
 		    {
-		      std::cout << "[" << name << "] State changed to " << static_cast<int>(*(fsm->get_current_state())) << std::endl;
+				std::cout << "[" << name << "] State changed to " << static_cast<int>(*(fsm->get_current_state())) << std::endl;
 		    }
 		  }
 		}
@@ -118,9 +118,9 @@ class FSMController
 		 */
 		explicit FSMController(std::string n, FSM<T>* f, int msrr, FSMSystemCommunicator* fsc)
 		{
-		  name = n;
-		  fsm = f;
-		  ms_reevaluate_rate = msrr;
+			name = n;
+			fsm = f;
+			ms_reevaluate_rate = msrr;
 			fsm_system_communicator = fsc;
 			fsm_system_communicator->add_FSM(name, dynamic_cast<BaseFSM*>(fsm));
 		}
@@ -140,8 +140,8 @@ class FSMController
 		void start_routine()
 		{
 			init();
-		  keep_spin_routine_alive = true;
-		  spin_routine_thread = std::thread(&FSMController::spin_routine, this);
+			keep_spin_routine_alive = true;
+			spin_routine_thread = std::thread(&FSMController::spin_routine, this);
 		}
 
 		/*
@@ -154,11 +154,11 @@ class FSMController
 		}
 
     /*
-		 *  Template member function to get the current value of a FSM by its name.
+	 *  Template member function to get the current value of a FSM by its name.
      *  @param name The name of the FSM of interest
-		 */
+	 */
     template <typename U>
-		U* get_current_state_of(std::string name)
+	U* get_current_state_of(std::string name)
     {
       return dynamic_cast<FSM<U>*>(fsm_system_communicator->get_base_FSM(name))->get_current_state();
     }

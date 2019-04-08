@@ -16,29 +16,29 @@
  */
 class HungerLevelController : public FSMController<HungerLevel>
 {
-  protected:
+	protected:
 
-    /*
-     *  Override of FSMController's definition.
-     *  See that definition for more information.
-     */
-    void init();
-
-    /*
+		/*
 		 *  Override of FSMController's definition.
-     *  See that definition for more information.
+		 *  See that definition for more information.
+		 */
+		void init();
+
+		/*
+		 *  Override of FSMController's definition.
+		 *  See that definition for more information.
 		 */
 		void update_inputs();
 
 		/*
 		 *  Override of FSMController's definition.
-     *  See that definition for more information.
+		 *  See that definition for more information.
 		 */
 		bool process();
 
-  public:
+	public:
 
-    /*
+		/*
 		 *  The constructor.
 		 *  Simply calls the base constructor.
 		 *  @param f The FSM for hunger level.
