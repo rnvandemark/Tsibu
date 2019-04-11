@@ -4,7 +4,7 @@ int16_t GPIO::get_current_value(bool is_digital)
 {
 	std::string file_URL = "/sys/class/gpio/gpio" + std::to_string(pin_number) + "/value";
 	std::ifstream file_get_value(file_URL.c_str());
-	if (file_get_value.is_open())
+	if (!file_get_value.is_open())
 	{
 		return -1;
 	}
@@ -40,10 +40,14 @@ GPIO::GPIO(int pn, GPIOMode im)
 		throw std::invalid_argument(std::string("Failed to export GPIO pin #") + std::to_string(pin_number));
 	}
 	
+	std::this_thread::sleep_for(std::chrono::milliseconds(150));
+	
 	if (!set_mode(im))
 	{
 		throw std::invalid_argument(std::string("Failed to set GPIO pin mode: ") + std::to_string(static_cast<int>(im)));
 	}
+	
+	std::this_thread::sleep_for(std::chrono::milliseconds(150));
 }
 
 GPIO::~GPIO()
@@ -65,7 +69,7 @@ GPIO::~GPIO()
 bool GPIO::export_pin()
 {
 	std::ofstream file_export("/sys/class/gpio/export");
-	if (file_export.is_open())
+	if (!file_export.is_open())
 	{
 		return false;
 	}
@@ -79,7 +83,7 @@ bool GPIO::export_pin()
 bool GPIO::unexport_pin()
 {
 	std::ofstream file_unexport("/sys/class/gpio/unexport");
-	if (file_unexport.is_open())
+	if (!file_unexport.is_open())
 	{
 		return false;
 	}
@@ -94,14 +98,16 @@ bool GPIO::set_mode(GPIOMode new_mode)
 {
 	std::string file_URL = "/sys/class/gpio/gpio" + std::to_string(pin_number) + "/direction";
 	std::ofstream file_mode(file_URL.c_str());
-	if (file_mode.is_open())
+	if (!file_mode.is_open())
 	{
+		std::cout << "Direction file not open!" << std::endl;
 		return false;
 	}
 	
 	const char* chars_to_write = gpio_mode_to_chars(new_mode);
 	if (chars_to_write == nullptr)
 	{
+		std::cout << "Direction chars not valid!" << std::endl;
 		return false;
 	}
 	
@@ -120,7 +126,7 @@ bool GPIO::set_analog_output_value(uint8_t new_output_value)
 {
 	std::string file_URL = "/sys/class/gpio/gpio" + std::to_string(pin_number) + "/value";
 	std::ofstream file_set_value(file_URL.c_str());
-	if (file_set_value.is_open())
+	if (!file_set_value.is_open())
 	{
 		return false;
 	}

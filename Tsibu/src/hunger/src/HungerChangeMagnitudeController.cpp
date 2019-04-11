@@ -13,6 +13,7 @@ void HungerChangeMagnitudeController::update_inputs()
 	// Generate a random number for now
 	
 	int16_t pr_current_value_left = left_photoresistor_gpio->get_current_analog_value();
+	std::cout << "current pr left: " << pr_current_value_left << std::endl;
 	if (pr_current_value_left < 0)
 	{
 		std::cout << "ERROR reading left photoresistor value." << std::endl;
@@ -28,6 +29,7 @@ void HungerChangeMagnitudeController::update_inputs()
 	}
 	
 	int16_t pr_current_value_middle = middle_photoresistor_gpio->get_current_analog_value();
+	std::cout << "current pr middle: " << pr_current_value_middle << std::endl;
 	if (pr_current_value_middle < 0)
 	{
 		std::cout << "ERROR reading middle photoresistor value." << std::endl;
@@ -43,6 +45,7 @@ void HungerChangeMagnitudeController::update_inputs()
 	}
 	
 	int16_t pr_current_value_right = right_photoresistor_gpio->get_current_analog_value();
+	std::cout << "current pr right: " << pr_current_value_right << std::endl;
 	if (pr_current_value_right < 0)
 	{
 		std::cout << "ERROR reading right photoresistor value." << std::endl;
@@ -58,6 +61,7 @@ void HungerChangeMagnitudeController::update_inputs()
 	}
 	
 	int16_t pr_current_value_rear = rear_photoresistor_gpio->get_current_analog_value();
+	std::cout << "current pr rear: " << pr_current_value_rear << std::endl;
 	if (pr_current_value_rear < 0)
 	{
 		std::cout << "ERROR reading rear photoresistor value." << std::endl;
@@ -102,7 +106,7 @@ bool HungerChangeMagnitudeController::process()
 
 	HungerChangeMagnitude* current_state = fsm->get_current_state();
 	fsm->set_current_state(next_state);
-	return *current_state != *next_state;
+	return (*current_state) != (*next_state);
 }
 
 HungerChangeMagnitudeController::HungerChangeMagnitudeController(FSM<HungerChangeMagnitude>* f, FSMSystemCommunicator* fsc)
