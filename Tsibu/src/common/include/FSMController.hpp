@@ -5,7 +5,6 @@
 #include <string>
 #include <type_traits>
 #include <thread>
-#include <mutex>
 #include <chrono>
 
 #include "FSMVariable.hpp"
@@ -35,11 +34,6 @@ class FSMController
 		 *  The thread that drives the main routine for a controller.
 		 */
 		std::thread spin_routine_thread;
-
-		/*
-		 *  The mutex to handle safe data access between the main and spin routine threads.
-		 */
-		std::mutex spin_routine_mutex;
 
 		/*
 		 *  A flag to let the spin routine thread know that it should still do work.

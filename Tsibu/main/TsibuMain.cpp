@@ -1,6 +1,8 @@
 #include "../src/common/include/FSMSystemCommunicator.hpp"
 #include "../src/common/include/FSM.hpp"
 
+#include "../src/common/include/GPIORegistrar.hpp"
+
 #include "../src/hunger/include/HungerLevel.hpp"
 #include "../src/hunger/include/HungerLevelController.hpp"
 
@@ -23,6 +25,11 @@ void sigint_handler(int signum)
 int main(int argc, char** argv)
 {
 	signal(SIGINT, sigint_handler);
+	
+	for (int i = 2; i <= 27; i++)
+	{
+		GPIORegistrar::add_legal_pin(i);
+	}
 
 	FSMSystemCommunicator* communicator = new FSMSystemCommunicator();
 
