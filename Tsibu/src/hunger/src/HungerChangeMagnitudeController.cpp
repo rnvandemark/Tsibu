@@ -110,18 +110,40 @@ bool HungerChangeMagnitudeController::process()
 }
 
 HungerChangeMagnitudeController::HungerChangeMagnitudeController(FSM<HungerChangeMagnitude>* f, FSMSystemCommunicator* fsc)
-	: FSMController(HUNGER_CHANGE_MAGNITUDE_FSM_NAME, f, HUNGER_CHANGE_MAGNITUDE_REEVALUATION_RATE_MILLISECONDS, fsc)
+: FSMController(HUNGER_CHANGE_MAGNITUDE_FSM_NAME, f, HUNGER_CHANGE_MAGNITUDE_REEVALUATION_RATE_MILLISECONDS, fsc)
 {
-	left_photoresistor_gpio = new GPIO(HUNGER_CHANGE_MAGNITUDE_VARIABLE_LEFT_PHOTORESISTOR_PIN_INDEX, GPIOMode::INPUT);
-	middle_photoresistor_gpio = new GPIO(HUNGER_CHANGE_MAGNITUDE_VARIABLE_MIDDLE_PHOTORESISTOR_PIN_INDEX, GPIOMode::INPUT);
-	right_photoresistor_gpio = new GPIO(HUNGER_CHANGE_MAGNITUDE_VARIABLE_RIGHT_PHOTORESISTOR_PIN_INDEX, GPIOMode::INPUT);
-	rear_photoresistor_gpio = new GPIO(HUNGER_CHANGE_MAGNITUDE_VARIABLE_REAR_PHOTORESISTOR_PIN_INDEX, GPIOMode::INPUT);
+	left_photoresistor_gpio = GPIORegistrar::request(HUNGER_CHANGE_MAGNITUDE_VARIABLE_LEFT_PHOTORESISTOR_PIN_INDEX);
+	left_photoresistor_gpio->set_mode(GPIOMode::INPUT);
+	
+	middle_photoresistor_gpio = GPIORegistrar::request(HUNGER_CHANGE_MAGNITUDE_VARIABLE_MIDDLE_PHOTORESISTOR_PIN_INDEX);
+	middle_photoresistor_gpio->set_mode(GPIOMode::INPUT);
+	
+	right_photoresistor_gpio = GPIORegistrar::request(HUNGER_CHANGE_MAGNITUDE_VARIABLE_RIGHT_PHOTORESISTOR_PIN_INDEX);
+	right_photoresistor_gpio->set_mode(GPIOMode::INPUT);
+	
+	rear_photoresistor_gpio = GPIORegistrar::request(HUNGER_CHANGE_MAGNITUDE_VARIABLE_REAR_PHOTORESISTOR_PIN_INDEX);
+	rear_photoresistor_gpio->set_mode(GPIOMode::INPUT);
 }
 
 HungerChangeMagnitudeController::~HungerChangeMagnitudeController()
 {
-	delete left_photoresistor_gpio;
-	delete middle_photoresistor_gpio;
-	delete right_photoresistor_gpio;
-	delete rear_photoresistor_gpio;
+	if (!GPIORegistrar::release(HUNGER_CHANGE_MAGNITUDE_VARIABLE_LEFT_PHOTORESISTOR_PIN_INDEX))
+	{
+		std::cout << "ERROR releasing GPIO pin #" << HUNGER_CHANGE_MAGNITUDE_VARIABLE_LEFT_PHOTORESISTOR_PIN_INDEX << std::endl;
+	}
+	
+	if (!GPIORegistrar::release(HUNGER_CHANGE_MAGNITUDE_VARIABLE_MIDDLE_PHOTORESISTOR_PIN_INDEX))
+	{
+		std::cout << "ERROR releasing GPIO pin #" << HUNGER_CHANGE_MAGNITUDE_VARIABLE_MIDDLE_PHOTORESISTOR_PIN_INDEX << std::endl;
+	}
+	
+	if (!GPIORegistrar::release(HUNGER_CHANGE_MAGNITUDE_VARIABLE_RIGHT_PHOTORESISTOR_PIN_INDEX))
+	{
+		std::cout << "ERROR releasing GPIO pin #" << HUNGER_CHANGE_MAGNITUDE_VARIABLE_RIGHT_PHOTORESISTOR_PIN_INDEX << std::endl;
+	}
+	
+	if (!GPIORegistrar::release(HUNGER_CHANGE_MAGNITUDE_VARIABLE_REAR_PHOTORESISTOR_PIN_INDEX))
+	{
+		std::cout << "ERROR releasing GPIO pin #" << HUNGER_CHANGE_MAGNITUDE_VARIABLE_REAR_PHOTORESISTOR_PIN_INDEX << std::endl;
+	}
 }

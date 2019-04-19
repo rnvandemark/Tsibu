@@ -1,7 +1,8 @@
 #include "../include/GPIORegistrar.hpp"
 
 std::mutex GPIORegistrar::gpio_mutex;
-std::unordered_map<int, bool> GPIORegistrar::pin_statuses;
+std::unordered_map<int, volatile unsigned int> GPIORegistrar::pin_statuses;
+std::unordered_map<int, GPIO*> GPIORegistrar::pin_objects;
 
 GPIORegistrar::GPIORegistrar()
 {
@@ -10,7 +11,7 @@ GPIORegistrar::GPIORegistrar()
 
 bool GPIORegistrar::pin_is_legal(int pin_number)
 {
-	return GPIORegistrar::pin_statuses.find(pin_number) != GPIORegistrar::pin_statuses.end();
+	return map_contains<volatile unsigned int>(pin_number, GPIORegistrar::pin_statuses);
 }
 
 bool GPIORegistrar::add_legal_pin(int pin_number)
@@ -19,10 +20,11 @@ bool GPIORegistrar::add_legal_pin(int pin_number)
 	
 	if (GPIORegistrar::pin_is_legal(pin_number))
 	{
+		GPIORegistrar::gpio_mutex.unlock();
 		return false;
 	}
 	
-	GPIORegistrar::pin_statuses[pin_number] = false;
+	GPIORegistrar::pin_statuses[pin_number] = 0;
 	
 	GPIORegistrar::gpio_mutex.unlock();
 	
@@ -33,8 +35,9 @@ bool GPIORegistrar::remove_legal_pin(int pin_number)
 {
 	GPIORegistrar::gpio_mutex.lock();
 	
-	if ((!GPIORegistrar::pin_is_legal(pin_number)) || GPIORegistrar::pin_statuses[pin_number])
+	if ((!GPIORegistrar::pin_is_legal(pin_number)) || (GPIORegistrar::pin_statuses[pin_number] != 0))
 	{
+		GPIORegistrar::gpio_mutex.unlock();
 		return false;
 	}
 	
@@ -45,32 +48,45 @@ bool GPIORegistrar::remove_legal_pin(int pin_number)
 	return true;
 }
 
-bool GPIORegistrar::request(int pin_number)
+GPIO* GPIORegistrar::request(int pin_number)
 {
 	GPIORegistrar::gpio_mutex.lock();
 	
-	if ((!GPIORegistrar::pin_is_legal(pin_number)) || GPIORegistrar::pin_statuses[pin_number])
+	if (!GPIORegistrar::pin_is_legal(pin_number))
 	{
-		return false;
+		GPIORegistrar::gpio_mutex.unlock();
+		return nullptr;
 	}
 	
-	GPIORegistrar::pin_statuses[pin_number] = true;
+	if (GPIORegistrar::pin_statuses[pin_number] == 0)
+	{
+		GPIORegistrar::pin_objects[pin_number] = GPIOHelper::factory(pin_number);
+	}
+	
+	GPIO* instance = GPIORegistrar::pin_objects[pin_number];
+	GPIORegistrar::pin_statuses[pin_number]++;
 	
 	GPIORegistrar::gpio_mutex.unlock();
 	
-	return true;
+	return instance;
 }
 
 bool GPIORegistrar::release(int pin_number)
 {
 	GPIORegistrar::gpio_mutex.lock();
 	
-	if ((!GPIORegistrar::pin_is_legal(pin_number)) || (!GPIORegistrar::pin_statuses[pin_number]))
+	if ((!GPIORegistrar::pin_is_legal(pin_number)) || (GPIORegistrar::pin_statuses[pin_number] == 0))
 	{
+		GPIORegistrar::gpio_mutex.unlock();
 		return false;
 	}
 	
-	GPIORegistrar::pin_statuses[pin_number] = false;
+	GPIORegistrar::pin_statuses[pin_number]--;
+	if (GPIORegistrar::pin_statuses[pin_number] == 0)
+	{
+		delete GPIORegistrar::pin_objects[pin_number];
+		GPIORegistrar::pin_objects.erase(pin_number);
+	}
 	
 	GPIORegistrar::gpio_mutex.unlock();
 	

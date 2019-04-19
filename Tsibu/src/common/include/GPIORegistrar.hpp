@@ -4,13 +4,23 @@
 #include <unordered_map>
 #include <mutex>
 
+#include "GPIOHelper.hpp"
+
 /*
- *  This static class monitors all instances of GPIO in the AI's program to ensure that pins on the board
- *  aren't being controlled by multiple sources by accident.
+ *  This static class monitors all instances of GPIO in the AI's program to ensure that pins on the board aren't being controlled by multiple sources by accident.
  */
 class GPIORegistrar
 {
 	private:
+		
+		/*
+		 *  A helper function to determine whether or not one of the static maps contains a specified pin number.
+		 */
+		template <typename V>
+		static bool map_contains(int pin_number, std::unordered_map<int, V> map)
+		{
+			return map.find(pin_number) != map.end();
+		}
 		
 		/*
 		 *  A mutex that helps to ensure that race conditions don't interfere with the safe acquisition or release of pins.
@@ -18,9 +28,17 @@ class GPIORegistrar
 		static std::mutex gpio_mutex;
 		
 		/*
-		 *  The map that tracks the status of each pin, where the key is the pin number and the boolean is whether or not it's occupied somewhere in the program.
+		 *  The map that contains all of the system legal pins to operate on, as well as the status of each pin, where the key is the pin number and the value is
+		 *  the amount of times the registrar has been informed that an element in the system will be accessing this pin throughout the lifetime of its routine.
+		 *  When the routine ends, this value decrements.
 		 */
-		static std::unordered_map<int, bool> pin_statuses;
+		static std::unordered_map<int, volatile unsigned int> pin_statuses;
+		
+		/*
+		 *  Pointers to each GPIO object allocated for some element of the program. For there to be an instance of the GPIO in this map, there must be at least one
+		 *  reference to it elsewhere in the program already (if the value of pin_statuses[pin_number] > 0). Otherwise, it should be allocated.
+		 */
+		static std::unordered_map<int, GPIO*> pin_objects;
 		
 		/*
 		 *  Restrict the default and only constructor to be private, so no instances can be made.
@@ -55,7 +73,7 @@ class GPIORegistrar
 		 *  @param pin_number The pin index of interest.
 		 *  @return Whether or not the pin was acquired.
 		 */
-		static bool request(int pin_number);
+		static GPIO* request(int pin_number);
 	
 		/*
 		 *  A function to release ownership of a pin at a specific index.

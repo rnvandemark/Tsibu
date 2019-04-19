@@ -2,20 +2,24 @@
 #define TSIBU_GPIO_MODE_HPP
 
 /*
- *  This class is the means of controlling the general purpose inputs and outputs on the
- *  mini-PC that the AI operates off of.
+ *  This class is the means of controlling the general purpose inputs and outputs on the mini-PC that the AI operates off of.
  */
 enum GPIOMode
 {
 	/*
+	 *  Defines being in an unknown state.
+	 */
+	UNDEFINED = 1,
+	
+	/*
 	 *  Defines being in an input state.
 	 */
-	INPUT = 1,
+	INPUT = 2,
 	
 	/*
 	 *  Defines being in an output state.
 	 */
-	OUTPUT = 2
+	OUTPUT = 3
 };
 
 inline const char* gpio_mode_to_chars(GPIOMode mode)

@@ -5,26 +5,35 @@
 #include <fstream>
 #include <iostream>
 #include <thread>
+#include <mutex>
 #include <chrono>
 #include <cstdint>
 #include <exception>
 
 #include "GPIOMode.hpp"
-#include "GPIORegistrar.hpp"
 
 /*
- *  This class is the means of controlling the general purpose inputs and outputs on the
- *  mini-PC that the AI operates off of. This is done by reading and writing the files
- *  associated with each pin.
+ *  This class is the means of controlling the general purpose inputs and outputs on the mini-PC that the AI operates off of. This is done by reading
+ *  and writing the files associated with each pin.
  */
 class GPIO
 {
 	private:
 		
 		/*
+		 *  A mutex that dictates ownership of legality to read or write from one of the serial files that this object utilizes communications with.
+		 */
+		std::mutex file_io_mutex;
+		
+		/*
 		 *  The pin that this instance owns.
 		 */
 		int pin_number;
+		
+		/*
+		 *  The mode that was last written to the direction specifier file.
+		 */
+		GPIOMode last_set_mode;
 		
 		/*
 		 *  Get the value of a generic pin type.
@@ -36,17 +45,34 @@ class GPIO
 	public:
 	
 		/*
-		 *  A constructor to initialize a pin number to an unspecified mode.
+		 *  A constructor to initialize a pin number to a specified mode.
 		 *  @param pn The pin number of this GPIO.
 		 *  @param im The initial mode for this pin to have.
 		 */
 		GPIO(int pn, GPIOMode im);
+	
+		/*
+		 *  A constructor to initialize a pin number to an unspecified mode.
+		 *  @param pn The pin number of this GPIO.
+		 */
+		GPIO(int pn);
 		
 		/*
 		 *  The destructor.
 		 *  Ensures that any resting state is set and unregisters itself with the global GPIO registrar.
 		 */
 		~GPIO();
+		
+		/*
+		 *  Wait a constant amount of time, for after file I/O interactions.
+		 */
+		void wait_after_file_operation();
+		
+		/*
+		 *  Get the mode that was last attempted to be set.
+		 *  @return The last sent mode.
+		 */
+		GPIOMode get_mode();
 		
 		/*
 		 *  Export the GPIO with this pin number so it can be used.
@@ -93,5 +119,7 @@ class GPIO
 		 */
 		int16_t get_current_analog_value();
 };
+
+#include "GPIORegistrar.hpp"
 
 #endif /* TSIBU_GPIO_HPP */
