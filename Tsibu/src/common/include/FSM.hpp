@@ -52,21 +52,8 @@ class FSM : public BaseFSM
 		 */
 		~FSM()
 		{
-			for(std::unordered_map<std::string, BaseFSMVariable*>::iterator iter = variables.begin(); iter != variables.end(); iter++)
-			{
-				BaseFSMVariable* variable_ptr = iter->second;
-				variables.erase(iter->first);
-
-				if (variable_ptr != nullptr)
-				{
-					delete variable_ptr;
-				}
-			}
-
-			if (current_state != nullptr)
-			{
-				delete current_state;
-			}
+			variables.clear();
+			set_current_state(nullptr);
 		}
 
 		/*

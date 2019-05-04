@@ -26,52 +26,26 @@ int16_t GPIO::get_current_value(bool is_digital)
 	return read_value;
 }
 
-GPIO::GPIO(int pn, GPIOMode im)
+GPIO::GPIO(unsigned int pn, GPIOMode im)
 {
-	pin_number = -1;
-	
-	if (GPIORegistrar::request(pn))
-	{
-		pin_number = pn;
-	}
-	else
-	{
-		throw std::invalid_argument(std::string("Failed to acquire GPIO pin #") + std::to_string(pin_number));
-	}
+	pin_number = pn;
 	
 	if (!export_pin())
 	{
 		throw std::invalid_argument(std::string("Failed to export GPIO pin #") + std::to_string(pin_number));
 	}
 	
-	if ((im != GPIOMode::UNDEFINED) && (!set_mode(im)))
+	if (im != GPIOMode::UNDEFINED)
 	{
-		throw std::invalid_argument(std::string("Failed to set GPIO pin mode: ") + std::to_string(static_cast<int>(im)));
+		if (!set_mode(im))
+		{
+			throw std::invalid_argument(std::string("Failed to set GPIO pin mode: ") + std::to_string(static_cast<int>(im)));
+		}
 	}
 }
 
-GPIO::GPIO(int pn) : GPIO(pn, GPIOMode::UNDEFINED)
-{
-	// Nothing else to do
-}
-
-GPIO::~GPIO()
-{
-	if (GPIORegistrar::pin_is_legal(pin_number))
-	{
-		if (!unexport_pin())
-		{
-			throw std::invalid_argument(std::string("Failed to unexport GPIO pin #") + std::to_string(pin_number));
-		}
-		
-		if (!GPIORegistrar::release(pin_number))
-		{
-			throw std::invalid_argument(std::string("Failed to export GPIO pin #") + std::to_string(pin_number));
-		}
-		
-		wait_after_file_operation();
-	}
-}
+GPIO::GPIO(unsigned int pn)
+: GPIO(pn, GPIOMode::UNDEFINED) {}
 
 void GPIO::wait_after_file_operation()
 {
@@ -93,7 +67,7 @@ bool GPIO::export_pin()
 		return false;
 	}
 	
-	file_export << pin_number;
+	file_export << std::to_string(pin_number);
 	
 	file_export.close();
 	wait_after_file_operation();
@@ -112,7 +86,7 @@ bool GPIO::unexport_pin()
 		return false;
 	}
 	
-	file_unexport << pin_number;
+	file_unexport << std::to_string(pin_number);
 	
 	file_unexport.close();
 	wait_after_file_operation();

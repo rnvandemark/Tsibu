@@ -49,23 +49,27 @@ class FSMController
 			while (true)
 			{
 				time_sleep_start = std::chrono::system_clock::now();
-				while (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - time_sleep_start).count() < ms_reevaluate_rate)
+				while (
+					std::chrono::duration_cast<std::chrono::milliseconds>(
+						std::chrono::system_clock::now() - time_sleep_start
+					).count() < ms_reevaluate_rate
+				)
 				{
 					if (!keep_spin_routine_alive)
 					{
 						return;
 					}
 
-					std::this_thread::sleep_for(std::chrono::milliseconds(1));
+					std::this_thread::sleep_for(std::chrono::milliseconds(5));
 				}
 
 				update_inputs();
-
-			if (process())
-		    {
-				std::cout << "[" << name << "] State changed to " << static_cast<int>(*(fsm->get_current_state())) << std::endl;
-		    }
-		  }
+				
+				if (process())
+		    		{
+					std::cout << "[" << name << "] State changed to " << static_cast<int>(*(fsm->get_current_state())) << std::endl;
+				}
+			}
 		}
 
 	protected:
@@ -143,19 +147,19 @@ class FSMController
 		 */
 		void stop_routine_and_join()
 		{
-		  keep_spin_routine_alive = false;
-		  spin_routine_thread.join();
+			keep_spin_routine_alive = false;
+			spin_routine_thread.join();
 		}
 
-    /*
-	 *  Template member function to get the current value of a FSM by its name.
-     *  @param name The name of the FSM of interest
-	 */
-    template <typename U>
-	U* get_current_state_of(std::string name)
-    {
-      return dynamic_cast<FSM<U>*>(fsm_system_communicator->get_base_FSM(name))->get_current_state();
-    }
+		/*
+		 *  Template member function to get the current value of a FSM by its name.
+		 *  @param name The name of the FSM of interest
+		 */
+		template <typename U>
+		U* get_current_state_of(std::string name)
+		{
+			return dynamic_cast<FSM<U>*>(fsm_system_communicator->get_base_FSM(name))->get_current_state();
+		}
 };
 
 #endif /* TSIBU_FSM_CONTROLLER_HPP */

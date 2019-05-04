@@ -28,7 +28,7 @@ class GPIO
 		/*
 		 *  The pin that this instance owns.
 		 */
-		int pin_number;
+		unsigned int pin_number;
 		
 		/*
 		 *  The mode that was last written to the direction specifier file.
@@ -49,19 +49,13 @@ class GPIO
 		 *  @param pn The pin number of this GPIO.
 		 *  @param im The initial mode for this pin to have.
 		 */
-		GPIO(int pn, GPIOMode im);
+		GPIO(unsigned int pn, GPIOMode im);
 	
 		/*
 		 *  A constructor to initialize a pin number to an unspecified mode.
 		 *  @param pn The pin number of this GPIO.
 		 */
-		GPIO(int pn);
-		
-		/*
-		 *  The destructor.
-		 *  Ensures that any resting state is set and unregisters itself with the global GPIO registrar.
-		 */
-		~GPIO();
+		GPIO(unsigned int pn);
 		
 		/*
 		 *  Wait a constant amount of time, for after file I/O interactions.

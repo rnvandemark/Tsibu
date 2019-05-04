@@ -1,7 +1,15 @@
+#include <iostream>
+#include <chrono>
+#include <thread>
+#include <csignal>
+
 #include "../src/common/include/FSMSystemCommunicator.hpp"
 #include "../src/common/include/FSM.hpp"
 
 #include "../src/common/include/GPIORegistrar.hpp"
+
+#include "../src/common/include/SerialCommunicator.hpp"
+#include "../src/common/include/BaudRate.hpp"
 
 #include "../src/hunger/include/HungerLevel.hpp"
 #include "../src/hunger/include/HungerLevelController.hpp"
@@ -9,16 +17,11 @@
 #include "../src/hunger/include/HungerChangeMagnitude.hpp"
 #include "../src/hunger/include/HungerChangeMagnitudeController.hpp"
 
-#include <iostream>
-#include <chrono>
-#include <thread>
-#include <csignal>
-
 static volatile bool keep_alive = true;
 
 void sigint_handler(int signum)
 {
-	std::cout << std::endl << "Heard signal [" << signum << "], attempting to exit (please wait briefly)..." << std::endl;
+	std::cout << std::endl << "[TsibuMain] Heard signal [" << signum << "], attempting to exit (please wait briefly)..." << std::endl;
 	keep_alive = false;
 }
 
@@ -31,13 +34,17 @@ int main(int argc, char** argv)
 		GPIORegistrar::add_legal_pin(i);
 	}
 
-	FSMSystemCommunicator* communicator = new FSMSystemCommunicator();
+	FSMSystemCommunicator* FSM_communicator = new FSMSystemCommunicator();
+	
+	SerialCommunicator* serial_communicator = new SerialCommunicator("/dev/ttyACM0", BaudRate::_9600, 0);
 
-	HungerLevelController hunger_level_fsm_controller(new FSM<HungerLevel>(), communicator);
-	HungerChangeMagnitudeController hunger_change_magnitude_fsm_controller(new FSM<HungerChangeMagnitude>(), communicator);
+	HungerLevelController hunger_level_fsm_controller(new FSM<HungerLevel>(), FSM_communicator);
+	HungerChangeMagnitudeController hunger_change_magnitude_fsm_controller(new FSM<HungerChangeMagnitude>(), FSM_communicator, serial_communicator);
 
 	hunger_level_fsm_controller.start_routine();
 	hunger_change_magnitude_fsm_controller.start_routine();
+
+	std::cout << "[TsibuMain] Started all FSMs." << std::endl;
 
 	while (keep_alive)
 	{
@@ -47,8 +54,9 @@ int main(int argc, char** argv)
 	hunger_level_fsm_controller.stop_routine_and_join();
 	hunger_change_magnitude_fsm_controller.stop_routine_and_join();
 
-	delete communicator;
+	delete serial_communicator;
+	delete FSM_communicator;
 
-	std::cout << "Cleanly exiting." << std::endl;
+	std::cout << "[TsibuMain] Cleanly exiting." << std::endl;
 	return 0;
 }

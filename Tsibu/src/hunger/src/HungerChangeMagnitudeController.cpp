@@ -9,141 +9,69 @@ void HungerChangeMagnitudeController::init()
 
 void HungerChangeMagnitudeController::update_inputs()
 {
-	// Get photoresistor values from static helper here
-	// Generate a random number for now
+	fsm->set_variable<uint16_t>(
+		HUNGER_CHANGE_MAGNITUDE_VARIABLE_LEFT_PHOTORESISTOR,
+		new uint16_t(serial_communicator->get_value_for_descriptor<uint16_t>(HUNGER_CHANGE_MAGNITUDE_LEFT_PR_DESCRIPTOR))
+	);
 	
-	int16_t pr_current_value_left = left_photoresistor_gpio->get_current_analog_value();
-	std::cout << "current pr left: " << pr_current_value_left << std::endl;
-	if (pr_current_value_left < 0)
-	{
-		std::cout << "ERROR reading left photoresistor value." << std::endl;
-	}
-	else
-	{
-		if (pr_current_value_left >= HUNGER_CHANGE_MAGNITUDE_MAXIMUM_PHOTORESISTOR_VALUE)
-		{
-			pr_current_value_left = HUNGER_CHANGE_MAGNITUDE_MAXIMUM_PHOTORESISTOR_VALUE - 1;
-		}
-		
-		fsm->set_variable<uint8_t>(HUNGER_CHANGE_MAGNITUDE_VARIABLE_LEFT_PHOTORESISTOR, new uint8_t(static_cast<uint8_t>(pr_current_value_left)));
-	}
+	fsm->set_variable<uint16_t>(
+		HUNGER_CHANGE_MAGNITUDE_VARIABLE_CENTER_PHOTORESISTOR,
+		new uint16_t(serial_communicator->get_value_for_descriptor<uint16_t>(HUNGER_CHANGE_MAGNITUDE_CENTER_PR_DESCRIPTOR))
+	);
 	
-	int16_t pr_current_value_middle = middle_photoresistor_gpio->get_current_analog_value();
-	std::cout << "current pr middle: " << pr_current_value_middle << std::endl;
-	if (pr_current_value_middle < 0)
-	{
-		std::cout << "ERROR reading middle photoresistor value." << std::endl;
-	}
-	else
-	{
-		if (pr_current_value_middle >= HUNGER_CHANGE_MAGNITUDE_MAXIMUM_PHOTORESISTOR_VALUE)
-		{
-			pr_current_value_middle = HUNGER_CHANGE_MAGNITUDE_MAXIMUM_PHOTORESISTOR_VALUE - 1;
-		}
-		
-		fsm->set_variable<uint8_t>(HUNGER_CHANGE_MAGNITUDE_VARIABLE_MIDDLE_PHOTORESISTOR, new uint8_t(static_cast<uint8_t>(pr_current_value_middle)));
-	}
+	fsm->set_variable<uint16_t>(
+		HUNGER_CHANGE_MAGNITUDE_VARIABLE_RIGHT_PHOTORESISTOR,
+		new uint16_t(serial_communicator->get_value_for_descriptor<uint16_t>(HUNGER_CHANGE_MAGNITUDE_RIGHT_PR_DESCRIPTOR))
+	);
 	
-	int16_t pr_current_value_right = right_photoresistor_gpio->get_current_analog_value();
-	std::cout << "current pr right: " << pr_current_value_right << std::endl;
-	if (pr_current_value_right < 0)
-	{
-		std::cout << "ERROR reading right photoresistor value." << std::endl;
-	}
-	else
-	{
-		if (pr_current_value_right >= HUNGER_CHANGE_MAGNITUDE_MAXIMUM_PHOTORESISTOR_VALUE)
-		{
-			pr_current_value_right = HUNGER_CHANGE_MAGNITUDE_MAXIMUM_PHOTORESISTOR_VALUE - 1;
-		}
-		
-		fsm->set_variable<uint8_t>(HUNGER_CHANGE_MAGNITUDE_VARIABLE_RIGHT_PHOTORESISTOR, new uint8_t(static_cast<uint8_t>(pr_current_value_right)));
-	}
+	fsm->set_variable<uint16_t>(
+		HUNGER_CHANGE_MAGNITUDE_VARIABLE_REAR_PHOTORESISTOR,
+		new uint16_t(serial_communicator->get_value_for_descriptor<uint16_t>(HUNGER_CHANGE_MAGNITUDE_REAR_PR_DESCRIPTOR))
+	);
 	
-	int16_t pr_current_value_rear = rear_photoresistor_gpio->get_current_analog_value();
-	std::cout << "current pr rear: " << pr_current_value_rear << std::endl;
-	if (pr_current_value_rear < 0)
-	{
-		std::cout << "ERROR reading rear photoresistor value." << std::endl;
-	}
-	else
-	{
-		if (pr_current_value_rear >= HUNGER_CHANGE_MAGNITUDE_MAXIMUM_PHOTORESISTOR_VALUE)
-		{
-			pr_current_value_rear = HUNGER_CHANGE_MAGNITUDE_MAXIMUM_PHOTORESISTOR_VALUE - 1;
-		}
-		
-		fsm->set_variable<uint8_t>(HUNGER_CHANGE_MAGNITUDE_VARIABLE_REAR_PHOTORESISTOR, new uint8_t(static_cast<uint8_t>(pr_current_value_rear)));
-	}
+	std::cout << "Read: " << static_cast<int>(dynamic_cast<FSMVariable<uint16_t>*>(fsm->get_variable(HUNGER_CHANGE_MAGNITUDE_VARIABLE_LEFT_PHOTORESISTOR))->get()) << std::endl;
 }
 
 bool HungerChangeMagnitudeController::process()
 {
-	uint16_t average = 0;
-	average += dynamic_cast<FSMVariable<uint8_t>*>(fsm->get_variable(HUNGER_CHANGE_MAGNITUDE_VARIABLE_LEFT_PHOTORESISTOR))->get();
-	average += dynamic_cast<FSMVariable<uint8_t>*>(fsm->get_variable(HUNGER_CHANGE_MAGNITUDE_VARIABLE_MIDDLE_PHOTORESISTOR))->get();
-	average += dynamic_cast<FSMVariable<uint8_t>*>(fsm->get_variable(HUNGER_CHANGE_MAGNITUDE_VARIABLE_RIGHT_PHOTORESISTOR))->get();
-	average += dynamic_cast<FSMVariable<uint8_t>*>(fsm->get_variable(HUNGER_CHANGE_MAGNITUDE_VARIABLE_REAR_PHOTORESISTOR))->get();
-	average /= 4;
+	int current_state_int = static_cast<int>(*(fsm->get_current_state()));
 
-	HungerChangeMagnitude* next_state = nullptr;
+	uint16_t average = 0;
+	average += dynamic_cast<FSMVariable<uint16_t>*>(fsm->get_variable(HUNGER_CHANGE_MAGNITUDE_VARIABLE_LEFT_PHOTORESISTOR))->get();
+	average += dynamic_cast<FSMVariable<uint16_t>*>(fsm->get_variable(HUNGER_CHANGE_MAGNITUDE_VARIABLE_CENTER_PHOTORESISTOR))->get();
+	average += dynamic_cast<FSMVariable<uint16_t>*>(fsm->get_variable(HUNGER_CHANGE_MAGNITUDE_VARIABLE_RIGHT_PHOTORESISTOR))->get();
+	average += dynamic_cast<FSMVariable<uint16_t>*>(fsm->get_variable(HUNGER_CHANGE_MAGNITUDE_VARIABLE_REAR_PHOTORESISTOR))->get();
+	average /= 4;
+	
+	int next_state_int = 0;
 	if (average < HUNGER_CHANGE_MAGNITUDE_LITTLE_SATISFACTION_THRESHOLD)
 	{
-	  next_state = new HungerChangeMagnitude(HungerChangeMagnitude::NO_SATISFACTION);
+		next_state_int = static_cast<int>(HungerChangeMagnitude::NO_SATISFACTION);
 	}
 	else if (average < HUNGER_CHANGE_MAGNITUDE_GOOD_SATISFACTION_THRESHOLD)
 	{
-	  next_state = new HungerChangeMagnitude(HungerChangeMagnitude::LITTLE_SATISFACTION);
+		next_state_int = static_cast<int>(HungerChangeMagnitude::LITTLE_SATISFACTION);
 	}
 	else if (average < HUNGER_CHANGE_MAGNITUDE_EXTREME_SATISFACTION_THRESHOLD)
 	{
-	  next_state = new HungerChangeMagnitude(HungerChangeMagnitude::GOOD_SATISFACTION);
+		next_state_int = static_cast<int>(HungerChangeMagnitude::GOOD_SATISFACTION);
 	}
 	else
 	{
-	  next_state = new HungerChangeMagnitude(HungerChangeMagnitude::EXTREME_SATISFACTION);
+		next_state_int = static_cast<int>(HungerChangeMagnitude::EXTREME_SATISFACTION);
 	}
-
-	HungerChangeMagnitude* current_state = fsm->get_current_state();
-	fsm->set_current_state(next_state);
-	return (*current_state) != (*next_state);
+	
+	fsm->set_current_state(new HungerChangeMagnitude(HungerChangeMagnitude(next_state_int)));
+	return current_state_int != next_state_int;
 }
 
-HungerChangeMagnitudeController::HungerChangeMagnitudeController(FSM<HungerChangeMagnitude>* f, FSMSystemCommunicator* fsc)
+HungerChangeMagnitudeController::HungerChangeMagnitudeController(FSM<HungerChangeMagnitude>* f, FSMSystemCommunicator* fsc, SerialCommunicator* sc)
 : FSMController(HUNGER_CHANGE_MAGNITUDE_FSM_NAME, f, HUNGER_CHANGE_MAGNITUDE_REEVALUATION_RATE_MILLISECONDS, fsc)
 {
-	left_photoresistor_gpio = GPIORegistrar::request(HUNGER_CHANGE_MAGNITUDE_VARIABLE_LEFT_PHOTORESISTOR_PIN_INDEX);
-	left_photoresistor_gpio->set_mode(GPIOMode::INPUT);
-	
-	middle_photoresistor_gpio = GPIORegistrar::request(HUNGER_CHANGE_MAGNITUDE_VARIABLE_MIDDLE_PHOTORESISTOR_PIN_INDEX);
-	middle_photoresistor_gpio->set_mode(GPIOMode::INPUT);
-	
-	right_photoresistor_gpio = GPIORegistrar::request(HUNGER_CHANGE_MAGNITUDE_VARIABLE_RIGHT_PHOTORESISTOR_PIN_INDEX);
-	right_photoresistor_gpio->set_mode(GPIOMode::INPUT);
-	
-	rear_photoresistor_gpio = GPIORegistrar::request(HUNGER_CHANGE_MAGNITUDE_VARIABLE_REAR_PHOTORESISTOR_PIN_INDEX);
-	rear_photoresistor_gpio->set_mode(GPIOMode::INPUT);
+	serial_communicator = sc;
 }
 
 HungerChangeMagnitudeController::~HungerChangeMagnitudeController()
 {
-	if (!GPIORegistrar::release(HUNGER_CHANGE_MAGNITUDE_VARIABLE_LEFT_PHOTORESISTOR_PIN_INDEX))
-	{
-		std::cout << "ERROR releasing GPIO pin #" << HUNGER_CHANGE_MAGNITUDE_VARIABLE_LEFT_PHOTORESISTOR_PIN_INDEX << std::endl;
-	}
-	
-	if (!GPIORegistrar::release(HUNGER_CHANGE_MAGNITUDE_VARIABLE_MIDDLE_PHOTORESISTOR_PIN_INDEX))
-	{
-		std::cout << "ERROR releasing GPIO pin #" << HUNGER_CHANGE_MAGNITUDE_VARIABLE_MIDDLE_PHOTORESISTOR_PIN_INDEX << std::endl;
-	}
-	
-	if (!GPIORegistrar::release(HUNGER_CHANGE_MAGNITUDE_VARIABLE_RIGHT_PHOTORESISTOR_PIN_INDEX))
-	{
-		std::cout << "ERROR releasing GPIO pin #" << HUNGER_CHANGE_MAGNITUDE_VARIABLE_RIGHT_PHOTORESISTOR_PIN_INDEX << std::endl;
-	}
-	
-	if (!GPIORegistrar::release(HUNGER_CHANGE_MAGNITUDE_VARIABLE_REAR_PHOTORESISTOR_PIN_INDEX))
-	{
-		std::cout << "ERROR releasing GPIO pin #" << HUNGER_CHANGE_MAGNITUDE_VARIABLE_REAR_PHOTORESISTOR_PIN_INDEX << std::endl;
-	}
+	// Do nothing
 }

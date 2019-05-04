@@ -1,10 +1,8 @@
 #ifndef TSIBU_HUNGER_CHANGE_MAGNITUDE_CONTROLLER_HPP
 #define TSIBU_HUNGER_CHANGE_MAGNITUDE_CONTROLLER_HPP
 
-// For random numbers
-#include <ctime>
-
 #include <iostream>
+#include <exception>
 
 #include "../../common/include/FSMController.hpp"
 #include "HungerChangeMagnitude.hpp"
@@ -12,6 +10,8 @@
 
 #include "../../common/include/GPIO.hpp"
 #include "../../common/include/GPIOMode.hpp"
+
+#include "../../common/include/SerialCommunicator.hpp"
 
 /*
  *  This class represents the controller for the HungerChangeMagnitude FSM.
@@ -21,24 +21,9 @@ class HungerChangeMagnitudeController : public FSMController<HungerChangeMagnitu
 	private:
 		
 		/*
-		 *  The container used for interacting with the GPIO set up for the left photresistor;
+		 *  A pointer to the obect that handles the serial communication to the Arduino reading the analog photoresistor values.
 		 */
-		GPIO* left_photoresistor_gpio;
-		
-		/*
-		 *  The container used for interacting with the GPIO set up for the middle photresistor;
-		 */
-		GPIO* middle_photoresistor_gpio;
-		
-		/*
-		 *  The container used for interacting with the GPIO set up for the right photresistor;
-		 */
-		GPIO* right_photoresistor_gpio;
-		
-		/*
-		 *  The container used for interacting with the GPIO set up for the rear photresistor;
-		 */
-		GPIO* rear_photoresistor_gpio;
+		SerialCommunicator* serial_communicator;
 	
 	protected:
 
@@ -67,8 +52,9 @@ class HungerChangeMagnitudeController : public FSMController<HungerChangeMagnitu
 		 *  Simply calls the base constructor.
 		 *  @param f The FSM for hunger change magnitude.
 		 *  @param fsc The system communicator that can contact other FSM instances to observe their current states.
+		 *  @param sc The serial communicator that handles communication with an Arduino.
 		 */
-		explicit HungerChangeMagnitudeController(FSM<HungerChangeMagnitude>* f, FSMSystemCommunicator* fsc);
+		explicit HungerChangeMagnitudeController(FSM<HungerChangeMagnitude>* f, FSMSystemCommunicator* fsc, SerialCommunicator* sc);
 
 		/*
 		 *  The destructor.
