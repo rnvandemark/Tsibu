@@ -1,7 +1,7 @@
-#define LEFT_PR_PIN A0
-#define CENTER_PR_PIN A1
-#define RIGHT_PR_PIN A2
-#define REAR_PR_PIN A3
+#define LEFT_PR_PIN A3
+#define CENTER_PR_PIN A2
+#define RIGHT_PR_PIN A1
+#define REAR_PR_PIN A0
 
 #define LEFT_PR_DESCRIPTOR String("PR_LT")
 #define CENTER_PR_DESCRIPTOR String("PR_CR")
@@ -22,7 +22,7 @@
 #define PR_COUNT 4
 
 #define IS_SERIAL_MONITOR 0
-#define WRITE_NEW_LINE 0 && IS_SERIAL_MONITOR
+#define WRITE_NEW_LINE (0 && IS_SERIAL_MONITOR)
 
 #define USE_TOGGLE_PIN 0
 #define TOGGLING_PIN 7
