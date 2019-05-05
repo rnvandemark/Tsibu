@@ -5,14 +5,23 @@
 https://projects.raspberrypi.org/en/projects/raspberry-pi-setting-up/3
 Setting up Raspberry Pi
 
-https://raspberry-projects.com/pi/programming-in-c/i2c/using-the-i2c-interface
-Using an I2C interface on the Raspberry Pi
-
 https://learn.adafruit.com/adafruits-raspberry-pi-lesson-10-stepper-motors/software
 Python code for a stepper motor
 
 https://pimylifeup.com/raspberry-pi-light-sensor/
 Hooking up photoresistors
+
+https://www.pololu.com/file/0J713/GP2Y0A41SK0F.pdf
+2Y0A41SK0F depth sensor
+
+http://www.sharp-world.com/products/device/lineup/data/pdf/datasheet/gp2y0a21yk_e.pdf
+GP2Y0A21YK0f depth sensor (shorter range)
+
+https://www.pololu.com/file/0J713/GP2Y0A41SK0F.pdf
+2Y0A41SK0F depth sensor (longer range)
+
+https://www.piborg.org/blog/diddyborg-v2-build-instructions
+Tsibu assembly
 
 #
 # Software
