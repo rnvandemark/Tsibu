@@ -26,3 +26,7 @@ Tsibu assembly
 #
 # Software
 #
+
+https://www.piborg.org/blog/thunderborg-getting-started
+https://learn.sparkfun.com/tutorials/raspberry-pi-spi-and-i2c-tutorial/all
+Preparing I2C interaction with the motor controller
