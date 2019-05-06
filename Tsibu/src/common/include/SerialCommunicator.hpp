@@ -60,7 +60,10 @@ class SerialCommunicator
 		int write_message(std::string message_contents);
 		
 		/*
-		 *  
+		 *  Given a message, get the value corresponsing to the descriptor expected.
+		 *  @param message The packet to parse for the value.
+		 *  @param expected_descriptor The descriptor to check for, to confirm proper functionality.
+		 *  @return The value associated with the provided descriptor.
 		 */
 		uint16_t extract_value_from_response_given_descriptor(std::string message, std::string expected_descriptor);
 		
@@ -72,12 +75,15 @@ class SerialCommunicator
 		uint16_t get_value_for_descriptor(std::string descriptor);
 		
 		/*
-		 *  
+		 *  Create and send the request for and then return the result of writing to the serial stream a message to set the value of a descriptor.
+		 *  @param descriptor The descriptor for the value to set.
+		 *  @param byte_values The byte values for the other end of the serial stream to handle.
+		 *  @return Wether or not the write operation was successful.
 		 */
 		bool set_value_for_descriptor(std::string descriptor, std::string byte_values);
 		
 		/*
-		 *  
+		 *  A helper function to purge all the bytes waiting in the serial buffer.
 		 */
 		void purge_buffer();
 	
@@ -112,22 +118,32 @@ class SerialCommunicator
 		void set_interface_attributes(BaudRate baud, int parity);
 		
 		/*
-		 *  
+		 *  Query the serial device with a descriptor and expect a digital value as a response.
+		 *  @param descriptor The descriptor of the data requested.
+		 *  @return The digital value associated with the descriptor, true and false being HIGH and LOW, respectively.
 		 */
 		bool get_digital_value_for_descriptor(std::string descriptor);
 		
 		/*
-		 *  
+		 *  Query the serial device with a descriptor and expect an analog value as a response.
+		 *  @param descriptor The descriptor of the data requested.
+		 *  @return The contents of the message, casted to the required short data type.
 		 */
 		uint16_t get_analog_value_for_descriptor(std::string descriptor);
 		
 		/*
-		 *  
+		 *  Create and send the request for and then return the result of writing to the serial stream a message to set the digital value of a descriptor.
+		 *  @param descriptor The descriptor for the value to set.
+		 *  @param new_value_is_high Whether or not to set the digital input as HIGH or LOW.
+		 *  @return Wether or not the write operation was successful.
 		 */
 		bool set_digital_value_for_descriptor(std::string descriptor, bool new_value_is_high);
 		
 		/*
-		 *  
+		 *  Create and send the request for and then return the result of writing to the serial stream a message to set the analog value of a descriptor.
+		 *  @param descriptor The descriptor for the value to set.
+		 *  @param new_analog_value The analog value to set the analog input as.
+		 *  @return Wether or not the write operation was successful.
 		 */
 		bool set_analog_value_for_descriptor(std::string descriptor, uint16_t new_analog_value);
 };
