@@ -4,6 +4,7 @@
 #include <string>
 #include <cstring>
 #include <iostream>
+#include <mutex>
 #include <termios.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -11,16 +12,25 @@
 
 #include "BaudRate.hpp"
 
-#define START_RX_TX static_cast<unsigned char>('~')
-#define START_RX_TX_DESCRIPTOR static_cast<unsigned char>('!')
-#define END_RX_TX_DESCRIPTOR static_cast<unsigned char>('@')
-#define END_RX_TX static_cast<unsigned char>('#')
+#define START_RXTX_READ_REQUEST static_cast<unsigned char>('~')
+#define START_RXTX_WRITE_REQUEST static_cast<unsigned char>('<')
+#define START_RXTX_RESPONSE static_cast<unsigned char>('>')
+#define START_RXTX_DESCRIPTOR static_cast<unsigned char>('!')
+#define END_RXTX_DESCRIPTOR static_cast<unsigned char>('@')
+#define END_RXTX static_cast<unsigned char>('#')
+
+#define DIGITAL_VALUE_HIGH static_cast<unsigned char>('H')
+#define DIGITAL_VALUE_LOW static_cast<unsigned char>('L')
 
 #define WAIT_AFTER_FILE_OPEN_MICROSECONDS 5000000
 
 #define READ_TIMEOUT_HUNDREDS_OF_MILLISECONDS 3
 
 #define READ_OPERATION_BUFFER_SIZE 16
+
+#define MAX_ANALOG_VALUE 1023
+
+#define PURGE_BUFFER_SIZE 512
 
 class SerialCommunicator
 {
@@ -30,6 +40,11 @@ class SerialCommunicator
 		 *  The descriptor of the file utilized for the serial communication stream.
 		 */
 		int fd;
+		
+		/*
+		 *  A mutex to prevent reading and writing too close to one another.
+		 */
+		std::mutex io_mutex;
 		
 		/*
 		 *  Read a message from the file stream, meaning capture the bytes until the transmission end character is seen.
@@ -43,6 +58,28 @@ class SerialCommunicator
 		 *  @return The number of bytes written, -1 on failure.
 		 */
 		int write_message(std::string message_contents);
+		
+		/*
+		 *  
+		 */
+		uint16_t extract_value_from_response_given_descriptor(std::string message, std::string expected_descriptor);
+		
+		/*
+		 *  Query the serial device with a descriptor and expect a value as a response.
+		 *  @param descriptor The descriptor of the data requested.
+		 *  @return The contents of the message, casted to the required short data type.
+		 */
+		uint16_t get_value_for_descriptor(std::string descriptor);
+		
+		/*
+		 *  
+		 */
+		bool set_value_for_descriptor(std::string descriptor, std::string byte_values);
+		
+		/*
+		 *  
+		 */
+		void purge_buffer();
 	
 	public:
 		
@@ -75,43 +112,24 @@ class SerialCommunicator
 		void set_interface_attributes(BaudRate baud, int parity);
 		
 		/*
-		 *  Query the serial device with a descriptor and expect a quantifiable value as a response, given some data type to cast to.
-		 *  @param descriptor The descriptor of the data requested.
-		 *  @return The contents of the message, casted to the desired data type.
+		 *  
 		 */
-		template <typename DataType>
-		DataType get_value_for_descriptor(std::string descriptor)
-		{
-			std::string formatted_string = "";
-			formatted_string += START_RX_TX;
-			formatted_string += std::string(1, static_cast<unsigned char>(0));
-			formatted_string += START_RX_TX_DESCRIPTOR;
-			formatted_string += descriptor;
-			formatted_string += END_RX_TX_DESCRIPTOR;
-			formatted_string += END_RX_TX;
-			
-			formatted_string[1] = static_cast<unsigned char>(formatted_string.size() - 2);
-			
-			int written_bytes = write_message(formatted_string);
-			if (written_bytes != formatted_string.size())
-			{
-				throw std::exception();
-			}
-			
-			std::string full_message = read_message();
-			std::size_t pos_value_start = full_message.find(END_RX_TX_DESCRIPTOR);
-			std::size_t pos_message_scope_end = full_message.find(END_RX_TX);
-			
-			if ((pos_value_start == std::string::npos) || (pos_message_scope_end == std::string::npos))
-			{
-				throw std::exception();
-			}
-			
-			int start_index = static_cast<int>(pos_value_start) + 1;
-			int end_index   = static_cast<int>(pos_message_scope_end);
-			
-			return static_cast<DataType>(std::stol(full_message.substr(start_index, end_index - start_index)));
-		}
+		bool get_digital_value_for_descriptor(std::string descriptor);
+		
+		/*
+		 *  
+		 */
+		uint16_t get_analog_value_for_descriptor(std::string descriptor);
+		
+		/*
+		 *  
+		 */
+		bool set_digital_value_for_descriptor(std::string descriptor, bool new_value_is_high);
+		
+		/*
+		 *  
+		 */
+		bool set_analog_value_for_descriptor(std::string descriptor, uint16_t new_analog_value);
 };
 
 #endif /* TSIBU_SERIAL_COMMUNICATOR_HPP */

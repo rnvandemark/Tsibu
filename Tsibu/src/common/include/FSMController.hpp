@@ -66,7 +66,7 @@ class FSMController
 				update_inputs();
 				
 				if (process())
-		    		{
+		    	{
 					std::cout << "[" << name << "] State changed to " << static_cast<int>(*(fsm->get_current_state())) << std::endl;
 				}
 			}
@@ -130,6 +130,15 @@ class FSMController
 		~FSMController()
 		{
 		  delete fsm;
+		}
+
+		/*
+		 *  Sets the reevaluation rate of the underlying finite state machine model.
+		 *  @param msrr The rate at which state is reevaluated, in milliseconds.
+		 */
+		void set_reevaluation_rate(int msrr)
+		{
+			ms_reevaluate_rate = msrr;
 		}
 
 		/*

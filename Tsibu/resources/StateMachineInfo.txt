@@ -2,11 +2,12 @@
 # Tasks for the state machines to handle
 #
 
-CMLM: Current Movement for Left Motor
-CMRM: Current Movement for Right Motor
 DH: Determine Hunger
 HHC: Handle Hunger Change
 COM: Current Operation Mode
+CMD: Current Movement Direction
+CMR: Current Movement in the Right Motor
+CML: Current Movement in the Left Motor
 
 #
 # Corresponding data types for state machines
@@ -15,3 +16,6 @@ COM: Current Operation Mode
 DH: HungerLevel {FULL, SOMEWHAT_HUNGRY, MODERATELY_HUNGRY, VERY_HUNGRY, FAMISHED}
 HHC: HungerChangeMagnitude {NO_SATISFACTION, LITTLE_SATISFACTION, GOOD_SATISFACTION, EXTREME_SATISFACTION}
 COM: OperationMode {IDLE, EXPLORING, FINDING_FOOD, PLAYING, FEARING}
+CMD: MovementDirection {NONE, FORWARD, REVERSE, RADIAL_CW, RADIAL_CCW}
+CMR: MovementType {NONE, FORWARD, REVERSE}
+CML: MovementType {NONE, FORWARD, REVERSE}
