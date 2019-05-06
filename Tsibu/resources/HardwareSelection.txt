@@ -36,7 +36,7 @@ Arrived
 
 https://www.piborg.org/robots/monsterborg
 Aluminum chassis for structural integrity, 4 motors, 4 wheels, a motor-controller unit with current-limiting drivers, and a few other smaller components
-Asked for funding
+Arrived
 
 #
 # Still Needed
