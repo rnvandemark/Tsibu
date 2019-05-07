@@ -17,6 +17,12 @@
 #include "../src/hunger/include/HungerChangeMagnitude.hpp"
 #include "../src/hunger/include/HungerChangeMagnitudeController.hpp"
 
+#include "../src/operation_mode/include/OperationMode.hpp"
+#include "../src/operation_mode/include/CurrentOperationModeController.hpp"
+
+#include "../src/motor_control/include/MovementDirection.hpp"
+#include "../src/motor_control/include/CurrentMovementDirectionController.hpp"
+
 static volatile bool keep_alive = true;
 
 void sigint_handler(int signum)
@@ -40,9 +46,13 @@ int main(int argc, char** argv)
 
 	HungerLevelController hunger_level_fsm_controller(new FSM<HungerLevel>(), FSM_communicator);
 	HungerChangeMagnitudeController hunger_change_magnitude_fsm_controller(new FSM<HungerChangeMagnitude>(), FSM_communicator, serial_communicator);
+	CurrentOperationModeController current_operation_mode_fsm_controller(new FSM<OperationMode>(), FSM_communicator);
+	CurrentMovementDirectionController current_movement_direction_fsm_controller(new FSM<MovementDirection>(), FSM_communicator, serial_communicator);
 
 	hunger_level_fsm_controller.start_routine();
 	hunger_change_magnitude_fsm_controller.start_routine();
+	current_operation_mode_fsm_controller.start_routine();
+	current_movement_direction_fsm_controller.start_routine();
 
 	std::cout << "[TsibuMain] Started all FSMs." << std::endl;
 	
@@ -135,6 +145,8 @@ int main(int argc, char** argv)
 
 	hunger_level_fsm_controller.stop_routine_and_join();
 	hunger_change_magnitude_fsm_controller.stop_routine_and_join();
+	current_operation_mode_fsm_controller.stop_routine_and_join();
+	current_movement_direction_fsm_controller.stop_routine_and_join();
 
 	delete serial_communicator;
 	delete FSM_communicator;
