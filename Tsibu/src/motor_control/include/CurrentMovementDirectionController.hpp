@@ -5,6 +5,7 @@
 
 #include "MovementDirection.hpp"
 #include "CurrentMovementDirectionConstants.hpp"
+#include "ThunderBorgController.hpp"
 
 #include "../../hunger/include/HungerLevel.hpp"
 #include "../../hunger/include/HungerLevelConstants.hpp"
@@ -27,6 +28,11 @@ class CurrentMovementDirectionController : public FSMController<MovementDirectio
 		 *  A pointer to the obect that handles the serial communication to the Arduino reading the analog photoresistor values.
 		 */
 		SerialCommunicator* serial_communicator;
+		
+		/*
+		 *  A pointer to the obect that handles the I2C communication with the ThunderBorg motor controller unit.
+		 */
+		ThunderBorgController* tb_controller;
 	
 	protected:
 

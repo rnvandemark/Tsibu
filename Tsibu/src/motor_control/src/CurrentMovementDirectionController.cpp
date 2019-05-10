@@ -117,9 +117,10 @@ CurrentMovementDirectionController::CurrentMovementDirectionController(FSM<Movem
 : FSMController(CURRENT_MOVEMENT_DIRECTION_FSM_NAME, f, CURRENT_MOVEMENT_DIRECTION_REEVALUATION_RATE_MILLISECONDS, fsc)
 {
 	serial_communicator = sc;
+	tb_controller = new ThunderBorgController();
 }
 
 CurrentMovementDirectionController::~CurrentMovementDirectionController()
 {
-	// Do nothing
+	delete tb_controller;
 }
