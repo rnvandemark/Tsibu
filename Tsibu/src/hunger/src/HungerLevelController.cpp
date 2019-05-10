@@ -30,17 +30,17 @@ bool HungerLevelController::process()
 	int current_hunger_change_magnitude_int = static_cast<int>(*(dynamic_cast<FSM<HungerChangeMagnitude>*>(
 		fsm_system_communicator->get_base_FSM(HUNGER_CHANGE_MAGNITUDE_FSM_NAME)
 	)->get_current_state()));
-
+	
 	// Multiply by a normalized factor
 	double normalized_hunger_change_magnitude = static_cast<double>(
 		(current_hunger_change_magnitude_int - static_cast<int>(HungerChangeMagnitude::NO_SATISFACTION)) * HUNGER_LEVEL_CHANGE_MAGNITUDE_FACTOR
 	);
-
+	
 	// Add the contribution to the cumulative satiation
 	double* new_cumulative_satiation = new double(
 		dynamic_cast<FSMVariable<double>*>(fsm->get_variable(HUNGER_LEVEL_VARIABLE_CUMULATIVE_SATIATION))->get() + normalized_hunger_change_magnitude
 	);
-
+	
 	// If enough hunger is satiated, make the AI less hungry
 	if ((*new_cumulative_satiation) > 0)
 	{
@@ -48,10 +48,10 @@ bool HungerLevelController::process()
 		next_state_int -= int_contribution;
 		(*new_cumulative_satiation) -= int_contribution;
 	}
-
+	
 	// Set the new satiation
 	fsm->set_variable<double>(HUNGER_LEVEL_VARIABLE_CUMULATIVE_SATIATION, new_cumulative_satiation);
-
+	
 	// If enough time as passed, make the AI hungrier
 	std::chrono::system_clock::time_point time_now = std::chrono::system_clock::now();
 	if (std::chrono::duration_cast<std::chrono::seconds>(
@@ -64,7 +64,7 @@ bool HungerLevelController::process()
 			new std::chrono::system_clock::time_point(time_now)
 		);
 	}
-
+	
 	if (next_state_int < static_cast<int>(HungerLevel::FULL))
 	{
 		next_state_int = static_cast<int>(HungerLevel::FULL);
@@ -73,7 +73,7 @@ bool HungerLevelController::process()
 	{
 		next_state_int = static_cast<int>(HungerLevel::FAMISHED);
 	}
-
+	
 	fsm->set_current_state(new HungerLevel(HungerLevel(next_state_int)));
 	return next_state_int != current_state_int;
 }

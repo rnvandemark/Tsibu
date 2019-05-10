@@ -3,7 +3,7 @@
 
 #include <string>
 
-#define CURRENT_MOVEMENT_DIRECTION_FSM_NAME std::string("hunger_change_magnitude")
+#define CURRENT_MOVEMENT_DIRECTION_FSM_NAME std::string("current_movement_direction")
 
 #define CURRENT_MOVEMENT_DIRECTION_REEVALUATION_RATE_MILLISECONDS 1000 // 1 second
 

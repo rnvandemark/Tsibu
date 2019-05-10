@@ -66,7 +66,7 @@ class FSMController
 				update_inputs();
 				
 				if (process())
-		    	{
+				{
 					std::cout << "[" << name << "] State changed to " << static_cast<int>(*(fsm->get_current_state())) << std::endl;
 				}
 			}
