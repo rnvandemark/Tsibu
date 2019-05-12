@@ -1,6 +1,9 @@
 #ifndef TSIBU_CURRENT_MOVEMENT_DIRECTION_CONTROLLER_HPP
 #define TSIBU_CURRENT_MOVEMENT_DIRECTION_CONTROLLER_HPP
 
+#include <string>
+#include <stdexcept>
+
 #include "../../common/include/FSMController.hpp"
 
 #include "MovementDirection.hpp"
@@ -9,7 +12,6 @@
 
 #include "../../hunger/include/HungerLevel.hpp"
 #include "../../hunger/include/HungerLevelConstants.hpp"
-
 #include "../../hunger/include/HungerChangeMagnitudeConstants.hpp"
 
 #include "../../operation_mode/include/OperationMode.hpp"
@@ -33,6 +35,13 @@ class CurrentMovementDirectionController : public FSMController<MovementDirectio
 		 *  A pointer to the obect that handles the I2C communication with the ThunderBorg motor controller unit.
 		 */
 		ThunderBorgController* tb_controller;
+
+		/*
+		 *  Send a motor command to the ThunderBorg based on the new direction type.
+		 *  @param direction The new movement direction to send motor commands for.
+		 *  @return Whether or not the appropriate motor set command was found and executed correctly.
+		 */
+		bool send_optimal_thunderborg_command(MovementDirection direction);
 	
 	protected:
 

@@ -110,14 +110,52 @@ bool CurrentMovementDirectionController::process()
 	}
 	
 	fsm->set_current_state(new MovementDirection(next_state));
-	return static_cast<int>(current_state) != static_cast<int>(next_state);
+	if (static_cast<int>(current_state) != static_cast<int>(next_state))
+	{
+		if (!send_optimal_thunderborg_command(next_state))
+		{
+			std::cout << "[CurrentMovementDirectionController] Error sending ThunderBorg command." << std::endl;
+		}
+		
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool CurrentMovementDirectionController::send_optimal_thunderborg_command(MovementDirection direction)
+{
+	switch(direction)
+	{
+		case MovementDirection::NONE:
+			return tb_controller->set_both_motor_speeds(0);
+		
+		case MovementDirection::FORWARD:
+			return tb_controller->set_both_motor_speeds(THUNDERBORG_MOTOR_SPEED_MAGNITUDE_DEFAULT);
+		
+		case MovementDirection::REVERSE:
+			return tb_controller->set_both_motor_speeds(-THUNDERBORG_MOTOR_SPEED_MAGNITUDE_DEFAULT);
+		
+		case MovementDirection::RADIAL_CW:
+			return tb_controller->set_left_motor_speed(THUNDERBORG_MOTOR_SPEED_MAGNITUDE_DEFAULT)
+				&& tb_controller->set_right_motor_speed(-THUNDERBORG_MOTOR_SPEED_MAGNITUDE_DEFAULT);
+		
+		case MovementDirection::RADIAL_CCW:
+			return tb_controller->set_right_motor_speed(-THUNDERBORG_MOTOR_SPEED_MAGNITUDE_DEFAULT)
+				&& tb_controller->set_left_motor_speed(THUNDERBORG_MOTOR_SPEED_MAGNITUDE_DEFAULT);
+		
+		default:
+			throw std::invalid_argument(std::string("Invalid movement direction specified: ") + std::to_string(direction));
+	}
 }
 
 CurrentMovementDirectionController::CurrentMovementDirectionController(FSM<MovementDirection>* f, FSMSystemCommunicator* fsc, SerialCommunicator* sc)
 : FSMController(CURRENT_MOVEMENT_DIRECTION_FSM_NAME, f, CURRENT_MOVEMENT_DIRECTION_REEVALUATION_RATE_MILLISECONDS, fsc)
 {
 	serial_communicator = sc;
-	tb_controller = new ThunderBorgController();
+	tb_controller = new ThunderBorgController(false);
 }
 
 CurrentMovementDirectionController::~CurrentMovementDirectionController()

@@ -2,14 +2,14 @@
 
 void SerialCommunicator::purge_buffer()
 {
-	unsigned char purge_buffer[PURGE_BUFFER_SIZE];
+	unsigned char purge_buffer[SERIAL_PURGE_BUFFER_SIZE];
 
 	while (true)
 	{
-		int bytes_read = read(fd, purge_buffer, PURGE_BUFFER_SIZE);
+		int bytes_read = read(fd, purge_buffer, SERIAL_PURGE_BUFFER_SIZE);
 		if (bytes_read < 0)
 		{
-			std::cout << "Error purging buffers." << std::endl;
+			std::cout << "[SerialCommunicator] Error purging buffers." << std::endl;
 			throw std::exception();
 		}
 		else if (bytes_read == 0)
@@ -31,7 +31,7 @@ std::string SerialCommunicator::read_message()
 		int bytes_read = read(fd, initial_read_buffer, 1);
 		if (bytes_read < 0)
 		{
-			std::cout << "Failure reading initial read buffer #0." << std::endl;
+			std::cout << "[SerialCommunicator] Failure reading initial read buffer #0." << std::endl;
 			throw std::exception();
 		}
 		else if (bytes_read == 0)
@@ -41,9 +41,10 @@ std::string SerialCommunicator::read_message()
 		
 		if (total_bytes_read == 0)
 		{
-			if (initial_read_buffer[0] != START_RXTX_RESPONSE)
+			if (initial_read_buffer[0] != SERIAL_START_RXTX_RESPONSE)
 			{
-				std::cout << "Failure reading initial read buffer #1, got " << initial_read_buffer[0] << " (expecting " << START_RXTX_RESPONSE << ")." << std::endl;
+				std::cout << "[SerialCommunicator] Failure reading initial read buffer #1, got "
+					<< initial_read_buffer[0] << " (expecting " << SERIAL_START_RXTX_RESPONSE << ")." << std::endl;
 				throw std::exception();
 			}
 		}
@@ -58,14 +59,14 @@ std::string SerialCommunicator::read_message()
 	std::string result = "";
 	total_bytes_read = 0;
 	
-	unsigned char read_buffer[READ_OPERATION_BUFFER_SIZE];
+	unsigned char read_buffer[SERIAL_READ_OPERATION_BUFFER_SIZE];
 	
 	while (total_bytes_read < expected_bytes_remaining)
 	{
-		int bytes_read = read(fd, read_buffer, READ_OPERATION_BUFFER_SIZE);
+		int bytes_read = read(fd, read_buffer, SERIAL_READ_OPERATION_BUFFER_SIZE);
 		if (bytes_read < 0)
 		{
-			std::cout << "Failure reading next read buffer." << std::endl;
+			std::cout << "[SerialCommunicator] Failure reading next read buffer." << std::endl;
 			throw std::exception();
 		}
 		
@@ -85,7 +86,7 @@ int SerialCommunicator::write_message(std::string message_contents)
 	int written_bytes = write(fd, message_contents.c_str(), message_contents.size());
 	if (written_bytes < 0)
 	{
-		std::cout << "Failure writing buffer." << std::endl;
+		std::cout << "[SerialCommunicator] Failure writing buffer." << std::endl;
 		throw std::exception();
 	}
 	
@@ -94,13 +95,13 @@ int SerialCommunicator::write_message(std::string message_contents)
 
 uint16_t SerialCommunicator::extract_value_from_response_given_descriptor(std::string message, std::string expected_descriptor)
 {
-	std::size_t pos_descriptor_start = message.find(START_RXTX_DESCRIPTOR);
-	std::size_t pos_value_start = message.find(END_RXTX_DESCRIPTOR);
-	std::size_t pos_message_scope_end = message.find(END_RXTX);
+	std::size_t pos_descriptor_start = message.find(SERIAL_START_RXTX_DESCRIPTOR);
+	std::size_t pos_value_start = message.find(SERIAL_END_RXTX_DESCRIPTOR);
+	std::size_t pos_message_scope_end = message.find(SERIAL_END_RXTX);
 
 	if ((pos_descriptor_start == std::string::npos) || (pos_value_start == std::string::npos) || (pos_message_scope_end == std::string::npos))
 	{
-		std::cout << "Failure extracting value from descriptor #0." << std::endl;
+		std::cout << "[SerialCommunicator] Failure extracting value from descriptor #0." << std::endl;
 		throw std::exception();
 	}
 
@@ -109,7 +110,7 @@ uint16_t SerialCommunicator::extract_value_from_response_given_descriptor(std::s
 
 	if (message.substr(descriptor_start_index, descriptor_end_index - descriptor_start_index).compare(expected_descriptor) != 0)
 	{
-		std::cout << "Failure extracting value from descriptor #1." << std::endl;
+		std::cout << "[SerialCommunicator] Failure extracting value from descriptor #1." << std::endl;
 		throw std::exception();
 	}
 
@@ -117,9 +118,9 @@ uint16_t SerialCommunicator::extract_value_from_response_given_descriptor(std::s
 	int value_end_index   = static_cast<int>(pos_message_scope_end);
 	
 	int value = static_cast<uint16_t>(std::stoi(message.substr(value_start_index, value_end_index - value_start_index)));
-	if (value > MAX_ANALOG_VALUE)
+	if (value > SERIAL_MAX_ANALOG_VALUE)
 	{
-		std::cout << "Failure extracting value from descriptor #2." << std::endl;
+		std::cout << "[SerialCommunicator] Failure extracting value from descriptor #2." << std::endl;
 		throw std::exception();
 	}
 	
@@ -128,12 +129,12 @@ uint16_t SerialCommunicator::extract_value_from_response_given_descriptor(std::s
 
 uint16_t SerialCommunicator::get_value_for_descriptor(std::string descriptor)
 {
-	std::string formatted_string(1, START_RXTX_READ_REQUEST);
+	std::string formatted_string(1, SERIAL_START_RXTX_READ_REQUEST);
 	formatted_string += std::string(1, static_cast<unsigned char>(0));
-	formatted_string += START_RXTX_DESCRIPTOR;
+	formatted_string += SERIAL_START_RXTX_DESCRIPTOR;
 	formatted_string += descriptor;
-	formatted_string += END_RXTX_DESCRIPTOR;
-	formatted_string += END_RXTX;
+	formatted_string += SERIAL_END_RXTX_DESCRIPTOR;
+	formatted_string += SERIAL_END_RXTX;
 	
 	formatted_string[1] = static_cast<unsigned char>(formatted_string.size() - 2);
 	
@@ -141,7 +142,7 @@ uint16_t SerialCommunicator::get_value_for_descriptor(std::string descriptor)
 	int written_bytes = write_message(formatted_string);
 	if (written_bytes != formatted_string.size())
 	{
-		std::cout << "Failure getting value for descriptor." << std::endl;
+		std::cout << "[SerialCommunicator] Failure getting value for descriptor." << std::endl;
 		throw std::exception();
 	}
 	
@@ -153,13 +154,13 @@ uint16_t SerialCommunicator::get_value_for_descriptor(std::string descriptor)
 
 bool SerialCommunicator::set_value_for_descriptor(std::string descriptor, std::string byte_values)
 {
-	std::string formatted_string(1, START_RXTX_WRITE_REQUEST);
+	std::string formatted_string(1, SERIAL_START_RXTX_WRITE_REQUEST);
 	formatted_string += std::string(1, static_cast<unsigned char>(0));
-	formatted_string += START_RXTX_DESCRIPTOR;
+	formatted_string += SERIAL_START_RXTX_DESCRIPTOR;
 	formatted_string += descriptor;
-	formatted_string += END_RXTX_DESCRIPTOR;
+	formatted_string += SERIAL_END_RXTX_DESCRIPTOR;
 	formatted_string += byte_values;
-	formatted_string += END_RXTX;
+	formatted_string += SERIAL_END_RXTX;
 		
 	formatted_string[1] = static_cast<unsigned char>(formatted_string.size() - 2);
 	
@@ -167,7 +168,7 @@ bool SerialCommunicator::set_value_for_descriptor(std::string descriptor, std::s
 	int written_bytes = write_message(formatted_string);
 	if (written_bytes != formatted_string.size())
 	{
-		std::cout << "Failure setting value for descriptor." << std::endl;
+		std::cout << "[SerialCommunicator] Failure setting value for descriptor." << std::endl;
 		throw std::exception();
 	}
 
@@ -185,9 +186,9 @@ SerialCommunicator::SerialCommunicator(std::string name, BaudRate baud, int pari
 		throw std::invalid_argument(std::string("Invalid filename provided: ") + name);
 	}
 	
-	std::cout << "Serial communication connected [" << fd << "]" << std::endl;
+	std::cout << "[SerialCommunicator] Serial communication connected [" << fd << "]" << std::endl;
 	
-	usleep(WAIT_AFTER_FILE_OPEN_MICROSECONDS);
+	usleep(SERIAL_WAIT_AFTER_FILE_OPEN_MICROSECONDS);
 	
 	set_interface_attributes(baud, parity);
 	set_blocking(false);
@@ -209,12 +210,12 @@ void SerialCommunicator::set_blocking(bool should_block)
 	memset(&tty, 0, sizeof tty);
 	if (tcgetattr(fd, &tty) != 0)
 	{
-		std::cout << "Failure extracting value from descriptor #2." << std::endl;
+		std::cout << "[SerialCommunicator] Failure extracting value from descriptor #2." << std::endl;
 		throw std::exception();
 	}
 	
 	tty.c_cc[VMIN]  = should_block ? 1 : 0;
-	tty.c_cc[VTIME] = READ_TIMEOUT_HUNDREDS_OF_MILLISECONDS;
+	tty.c_cc[VTIME] = SERIAL_READ_TIMEOUT_HUNDREDS_OF_MILLISECONDS;
 	
 	if (tcsetattr(fd, TCSANOW, &tty) != 0)
 	{
@@ -250,7 +251,7 @@ void SerialCommunicator::set_interface_attributes(BaudRate baud, int parity)
 	tty.c_oflag &= ~ONLCR;
 	
 	tty.c_cc[VMIN]  = 0;
-	tty.c_cc[VTIME] = READ_TIMEOUT_HUNDREDS_OF_MILLISECONDS;
+	tty.c_cc[VTIME] = SERIAL_READ_TIMEOUT_HUNDREDS_OF_MILLISECONDS;
 	
 	cfsetispeed(&tty, static_cast<int>(baud));
 	cfsetospeed(&tty, static_cast<int>(baud));
@@ -275,7 +276,7 @@ uint16_t SerialCommunicator::get_analog_value_for_descriptor(std::string descrip
 
 bool SerialCommunicator::set_digital_value_for_descriptor(std::string descriptor, bool new_value_is_high)
 {
-	return set_value_for_descriptor(descriptor, std::string(1, new_value_is_high ? DIGITAL_VALUE_HIGH : DIGITAL_VALUE_LOW));
+	return set_value_for_descriptor(descriptor, std::string(1, new_value_is_high ? SERIAL_DIGITAL_VALUE_HIGH : SERIAL_DIGITAL_VALUE_LOW));
 }
 		
 bool SerialCommunicator::set_analog_value_for_descriptor(std::string descriptor, uint16_t new_analog_value)
