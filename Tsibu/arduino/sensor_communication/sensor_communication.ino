@@ -1,6 +1,6 @@
-#define LEFT_PR_PIN A3
+#define LEFT_PR_PIN A1
 #define CENTER_PR_PIN A2
-#define RIGHT_PR_PIN A1
+#define RIGHT_PR_PIN A3
 #define REAR_PR_PIN A0
 
 #define DEBUG0_PIN 11
