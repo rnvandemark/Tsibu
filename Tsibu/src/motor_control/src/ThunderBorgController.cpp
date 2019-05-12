@@ -93,7 +93,7 @@ ThunderBorgController::~ThunderBorgController()
 		std::cout << "[ThunderBorgController] Error setting motor speeds to 0 on shutdown!" << std::endl;
 	}
 	
-	if (!set_LED(0, 0, 0))
+	if (!set_LED(0.1, 0.1, 0.1))
 	{
 		std::cout << "[ThunderBorgController] Error turning off LED on shutdown." << std::endl;
 	}

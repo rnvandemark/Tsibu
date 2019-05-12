@@ -78,7 +78,7 @@ bool CurrentMovementDirectionController::process()
 				}
 				else if (pr_right > pr_left)
 				{
-					if (current_state == MovementDirection::RADIAL_CW)
+					if ((current_state == MovementDirection::NONE) || (current_state == MovementDirection::RADIAL_CW))
 					{
 						next_state = MovementDirection::RADIAL_CW;
 					}
@@ -89,7 +89,7 @@ bool CurrentMovementDirectionController::process()
 				}
 				else
 				{
-					if (current_state == MovementDirection::RADIAL_CCW)
+					if ((current_state == MovementDirection::NONE) || (current_state == MovementDirection::RADIAL_CCW))
 					{
 						next_state = MovementDirection::RADIAL_CCW;
 					}
