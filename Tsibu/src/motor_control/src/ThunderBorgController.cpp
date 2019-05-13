@@ -95,7 +95,7 @@ ThunderBorgController::~ThunderBorgController()
 	
 	if (!set_LED(0.1, 0.1, 0.1))
 	{
-		std::cout << "[ThunderBorgController] Error turning off LED on shutdown." << std::endl;
+		std::cout << "[ThunderBorgController] Error turning LED to dim white on shutdown." << std::endl;
 	}
 	
 	delete i2c_communicator;
