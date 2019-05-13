@@ -88,7 +88,7 @@ ThunderBorgController::ThunderBorgController(bool set_motor_failsafe)
 
 ThunderBorgController::~ThunderBorgController()
 {
-	if (!set_both_motor_speeds(0))
+	if (!stop_motors())
 	{
 		std::cout << "[ThunderBorgController] Error setting motor speeds to 0 on shutdown!" << std::endl;
 	}
@@ -175,4 +175,9 @@ bool ThunderBorgController::set_right_motor_speed(double s)
 bool ThunderBorgController::set_both_motor_speeds(double s)
 {
 	return set_motor_speeds(MotorType::BOTH, s);
+}
+
+bool ThunderBorgController::stop_motors()
+{
+	return set_both_motor_speeds(0);
 }

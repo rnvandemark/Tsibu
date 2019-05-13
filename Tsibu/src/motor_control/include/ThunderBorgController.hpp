@@ -94,6 +94,12 @@ class ThunderBorgController
 		 *  @return Whether or not the motor speed was successfully set.
 		 */
 		bool set_both_motor_speeds(double s);
+		
+		/*
+		 *  Stop all the motors.
+		 *  @return Whether or not the motors were successfully stopped.
+		 */
+		bool stop_motors();
 };
 
 #endif /* TSIBU_THUNDERBORG_CONTROLLER_HPP */

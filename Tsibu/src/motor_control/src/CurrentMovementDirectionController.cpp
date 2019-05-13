@@ -142,21 +142,21 @@ bool CurrentMovementDirectionController::send_optimal_thunderborg_command(Moveme
 	switch(direction)
 	{
 		case MovementDirection::NONE:
-			return tb_controller->set_both_motor_speeds(0);
+			return tb_controller->stop_motors();
 		
 		case MovementDirection::FORWARD:
-			return tb_controller->set_both_motor_speeds(THUNDERBORG_MOTOR_SPEED_MAGNITUDE_DEFAULT);
+			return tb_controller->set_both_motor_speeds(THUNDERBORG_MOTOR_STRAIGHT_SPEED_MAGNITUDE_DEFAULT);
 		
 		case MovementDirection::REVERSE:
-			return tb_controller->set_both_motor_speeds(-THUNDERBORG_MOTOR_SPEED_MAGNITUDE_DEFAULT);
+			return tb_controller->set_both_motor_speeds(-THUNDERBORG_MOTOR_STRAIGHT_SPEED_MAGNITUDE_DEFAULT);
 		
 		case MovementDirection::RADIAL_CW:
-			return tb_controller->set_left_motor_speed(THUNDERBORG_MOTOR_SPEED_MAGNITUDE_DEFAULT)
-				&& tb_controller->set_right_motor_speed(-THUNDERBORG_MOTOR_SPEED_MAGNITUDE_DEFAULT);
+			return tb_controller->set_left_motor_speed(THUNDERBORG_MOTOR_TURN_SPEED_MAGNITUDE_DEFAULT)
+				&& tb_controller->set_right_motor_speed(-THUNDERBORG_MOTOR_TURN_SPEED_MAGNITUDE_DEFAULT);
 		
 		case MovementDirection::RADIAL_CCW:
-			return tb_controller->set_right_motor_speed(-THUNDERBORG_MOTOR_SPEED_MAGNITUDE_DEFAULT)
-				&& tb_controller->set_left_motor_speed(THUNDERBORG_MOTOR_SPEED_MAGNITUDE_DEFAULT);
+			return tb_controller->set_left_motor_speed(-THUNDERBORG_MOTOR_TURN_SPEED_MAGNITUDE_DEFAULT)
+				&& tb_controller->set_right_motor_speed(THUNDERBORG_MOTOR_TURN_SPEED_MAGNITUDE_DEFAULT);
 		
 		default:
 			throw std::invalid_argument(std::string("Invalid movement direction specified: ") + std::to_string(direction));
