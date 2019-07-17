@@ -23,6 +23,12 @@ https://www.pololu.com/file/0J713/GP2Y0A41SK0F.pdf
 https://www.piborg.org/blog/diddyborg-v2-build-instructions
 Tsibu assembly
 
+https://cdn-shop.adafruit.com/datasheets/MCP3008.pdf
+MCP3008 Datasheet
+
+https://learn.adafruit.com/raspberry-pi-analog-to-digital-converters/mcp3008
+MCP3008 ADC Wiring and Usage
+
 #
 # Software
 #
@@ -32,3 +38,6 @@ https://learn.sparkfun.com/tutorials/raspberry-pi-spi-and-i2c-tutorial/all
 https://www.piborg.org/blog/build/thunderborg-build/thunderborg-examples
 http://wiringpi.com/reference/i2c-library/
 Preparing I2C interaction with the motor controller
+
+http://wiringpi.com/reference/spi-library/
+WiringPi SPI Library
