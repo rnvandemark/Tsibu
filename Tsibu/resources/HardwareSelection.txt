@@ -1,5 +1,5 @@
 #
-# Updated 05/10
+# Updated 07/17
 #
 
 #
@@ -37,6 +37,10 @@ Arrived
 https://www.piborg.org/robots/monsterborg
 Aluminum chassis for structural integrity, 4 motors, 4 wheels, a motor-controller unit with current-limiting drivers, and a few other smaller components
 Arrived
+
+https://www.adafruit.com/product/856
+MCP3008 - 8-Channel 10-Bit ADC with SPI Interface (x3)
+Ordered
 
 #
 # Still Needed

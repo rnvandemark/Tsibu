@@ -31,71 +31,83 @@ bool CurrentMovementDirectionController::process()
 		{
 			case OperationMode::FINDING_FOOD:
 			{
-				uint16_t pr_left   = serial_communicator->get_analog_value_for_descriptor(HUNGER_CHANGE_MAGNITUDE_LEFT_PR_DESCRIPTOR);
-				uint16_t pr_center = serial_communicator->get_analog_value_for_descriptor(HUNGER_CHANGE_MAGNITUDE_CENTER_PR_DESCRIPTOR);
-				uint16_t pr_right  = serial_communicator->get_analog_value_for_descriptor(HUNGER_CHANGE_MAGNITUDE_RIGHT_PR_DESCRIPTOR);
-				uint16_t pr_rear   = serial_communicator->get_analog_value_for_descriptor(HUNGER_CHANGE_MAGNITUDE_REAR_PR_DESCRIPTOR);
+				HungerChangeMagnitude current_hunger_change_magnitude = *(dynamic_cast<FSM<HungerChangeMagnitude>*>(
+					fsm_system_communicator->get_base_FSM(HUNGER_CHANGE_MAGNITUDE_FSM_NAME)
+				)->get_current_state());
 				
-				if ((pr_rear > pr_left) && (pr_rear > pr_center) && (pr_rear > pr_right))
+				if (current_hunger_change_magnitude == HungerChangeMagnitude::EXTREME_SATISFACTION)
 				{
-					if ((current_state == MovementDirection::FORWARD) || (current_state == MovementDirection::REVERSE))
-					{
-						next_state = MovementDirection::NONE;
-					}
-					else if (pr_left > pr_right)
-					{
-						if (current_state == MovementDirection::RADIAL_CW)
-						{
-							next_state = MovementDirection::NONE;
-						}
-						else
-						{
-							next_state = MovementDirection::RADIAL_CCW;
-						}
-					}
-					else
-					{
-						if (current_state == MovementDirection::RADIAL_CCW)
-						{
-							next_state = MovementDirection::NONE;
-						}
-						else
-						{
-							next_state = MovementDirection::RADIAL_CW;
-						}
-					}
-				}
-				else if ((pr_center > pr_left) && (pr_center > pr_right))
-				{
-					if ((current_state == MovementDirection::FORWARD) || (current_state == MovementDirection::NONE))
-					{
-						next_state = MovementDirection::FORWARD;
-					}
-					else
-					{
-						next_state = MovementDirection::NONE;
-					}
-				}
-				else if (pr_right > pr_left)
-				{
-					if ((current_state == MovementDirection::NONE) || (current_state == MovementDirection::RADIAL_CW))
-					{
-						next_state = MovementDirection::RADIAL_CW;
-					}
-					else
-					{
-						next_state = MovementDirection::NONE;
-					}
+					next_state = MovementDirection::NONE;
 				}
 				else
 				{
-					if ((current_state == MovementDirection::NONE) || (current_state == MovementDirection::RADIAL_CCW))
+					uint16_t pr_left   = serial_communicator->get_analog_value_for_descriptor(HUNGER_CHANGE_MAGNITUDE_LEFT_PR_DESCRIPTOR);
+					uint16_t pr_center = serial_communicator->get_analog_value_for_descriptor(HUNGER_CHANGE_MAGNITUDE_CENTER_PR_DESCRIPTOR);
+					uint16_t pr_right  = serial_communicator->get_analog_value_for_descriptor(HUNGER_CHANGE_MAGNITUDE_RIGHT_PR_DESCRIPTOR);
+					uint16_t pr_rear   = serial_communicator->get_analog_value_for_descriptor(HUNGER_CHANGE_MAGNITUDE_REAR_PR_DESCRIPTOR);
+					
+					if ((pr_rear > pr_left) && (pr_rear > pr_center) && (pr_rear > pr_right))
 					{
-						next_state = MovementDirection::RADIAL_CCW;
+						if ((current_state == MovementDirection::FORWARD) || (current_state == MovementDirection::REVERSE))
+						{
+							next_state = MovementDirection::NONE;
+						}
+						else if (pr_left > pr_right)
+						{
+							if (current_state == MovementDirection::RADIAL_CW)
+							{
+								next_state = MovementDirection::NONE;
+							}
+							else
+							{
+								next_state = MovementDirection::RADIAL_CCW;
+							}
+						}
+						else
+						{
+							if (current_state == MovementDirection::RADIAL_CCW)
+							{
+								next_state = MovementDirection::NONE;
+							}
+							else
+							{
+								next_state = MovementDirection::RADIAL_CW;
+							}
+						}
+					}
+					else if ((pr_center > (CURRENT_MOVEMENT_DIRECTION_FORWARD_FACTOR * pr_left))
+						&& (pr_center > (CURRENT_MOVEMENT_DIRECTION_FORWARD_FACTOR * pr_right)))
+					{
+						if ((current_state == MovementDirection::FORWARD) || (current_state == MovementDirection::NONE))
+						{
+							next_state = MovementDirection::FORWARD;
+						}
+						else
+						{
+							next_state = MovementDirection::NONE;
+						}
+					}
+					else if (pr_right > pr_left)
+					{
+						if ((current_state == MovementDirection::NONE) || (current_state == MovementDirection::RADIAL_CW))
+						{
+							next_state = MovementDirection::RADIAL_CW;
+						}
+						else
+						{
+							next_state = MovementDirection::NONE;
+						}
 					}
 					else
 					{
-						next_state = MovementDirection::NONE;
+						if ((current_state == MovementDirection::NONE) || (current_state == MovementDirection::RADIAL_CCW))
+						{
+							next_state = MovementDirection::RADIAL_CCW;
+						}
+						else
+						{
+							next_state = MovementDirection::NONE;
+						}
 					}
 				}
 				
@@ -130,21 +142,21 @@ bool CurrentMovementDirectionController::send_optimal_thunderborg_command(Moveme
 	switch(direction)
 	{
 		case MovementDirection::NONE:
-			return tb_controller->set_both_motor_speeds(0);
+			return tb_controller->stop_motors();
 		
 		case MovementDirection::FORWARD:
-			return tb_controller->set_both_motor_speeds(THUNDERBORG_MOTOR_SPEED_MAGNITUDE_DEFAULT);
+			return tb_controller->set_both_motor_speeds(THUNDERBORG_MOTOR_STRAIGHT_SPEED_MAGNITUDE_DEFAULT);
 		
 		case MovementDirection::REVERSE:
-			return tb_controller->set_both_motor_speeds(-THUNDERBORG_MOTOR_SPEED_MAGNITUDE_DEFAULT);
+			return tb_controller->set_both_motor_speeds(-THUNDERBORG_MOTOR_STRAIGHT_SPEED_MAGNITUDE_DEFAULT);
 		
 		case MovementDirection::RADIAL_CW:
-			return tb_controller->set_left_motor_speed(THUNDERBORG_MOTOR_SPEED_MAGNITUDE_DEFAULT)
-				&& tb_controller->set_right_motor_speed(-THUNDERBORG_MOTOR_SPEED_MAGNITUDE_DEFAULT);
+			return tb_controller->set_left_motor_speed(THUNDERBORG_MOTOR_TURN_SPEED_MAGNITUDE_DEFAULT)
+				&& tb_controller->set_right_motor_speed(-THUNDERBORG_MOTOR_TURN_SPEED_MAGNITUDE_DEFAULT);
 		
 		case MovementDirection::RADIAL_CCW:
-			return tb_controller->set_right_motor_speed(-THUNDERBORG_MOTOR_SPEED_MAGNITUDE_DEFAULT)
-				&& tb_controller->set_left_motor_speed(THUNDERBORG_MOTOR_SPEED_MAGNITUDE_DEFAULT);
+			return tb_controller->set_left_motor_speed(-THUNDERBORG_MOTOR_TURN_SPEED_MAGNITUDE_DEFAULT)
+				&& tb_controller->set_right_motor_speed(THUNDERBORG_MOTOR_TURN_SPEED_MAGNITUDE_DEFAULT);
 		
 		default:
 			throw std::invalid_argument(std::string("Invalid movement direction specified: ") + std::to_string(direction));

@@ -12,6 +12,7 @@
 
 #include "../../hunger/include/HungerLevel.hpp"
 #include "../../hunger/include/HungerLevelConstants.hpp"
+#include "../../hunger/include/HungerChangeMagnitude.hpp"
 #include "../../hunger/include/HungerChangeMagnitudeConstants.hpp"
 
 #include "../../operation_mode/include/OperationMode.hpp"
