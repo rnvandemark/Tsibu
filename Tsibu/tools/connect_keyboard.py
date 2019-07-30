@@ -1,5 +1,6 @@
-from subprocess import Popen, PIPE
+from subprocess import Popen, PIPE, call
 from time import sleep
+from os import popen as ospopen
 
 def execute():
 	bt_process = Popen(
@@ -22,6 +23,10 @@ def execute():
 	sleep(0.1)
 	
 	bt_process.kill()
-
+	
+	ospopen(
+		"echo \"Connection process done!\" | DISPLAY=:0 aosd_cat -R white -x 600 -y -450 -n \"Arial Black 40\""
+	)
+	
 if __name__ == '__main__':
 	execute()

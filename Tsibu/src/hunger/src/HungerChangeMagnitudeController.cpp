@@ -28,11 +28,6 @@ void HungerChangeMagnitudeController::update_inputs()
 		HUNGER_CHANGE_MAGNITUDE_VARIABLE_REAR_PHOTORESISTOR,
 		new uint16_t(serial_communicator->get_analog_value_for_descriptor(HUNGER_CHANGE_MAGNITUDE_REAR_PR_DESCRIPTOR))
 	);
-	
-	//std::cout << "LT: " << static_cast<int>(dynamic_cast<FSMVariable<uint16_t>*>(fsm->get_variable(HUNGER_CHANGE_MAGNITUDE_VARIABLE_LEFT_PHOTORESISTOR))->get()) << std::endl;
-	//std::cout << "CR: " << static_cast<int>(dynamic_cast<FSMVariable<uint16_t>*>(fsm->get_variable(HUNGER_CHANGE_MAGNITUDE_VARIABLE_CENTER_PHOTORESISTOR))->get()) << std::endl;
-	//std::cout << "RT: " << static_cast<int>(dynamic_cast<FSMVariable<uint16_t>*>(fsm->get_variable(HUNGER_CHANGE_MAGNITUDE_VARIABLE_RIGHT_PHOTORESISTOR))->get()) << std::endl;
-	//std::cout << "RR: " << static_cast<int>(dynamic_cast<FSMVariable<uint16_t>*>(fsm->get_variable(HUNGER_CHANGE_MAGNITUDE_VARIABLE_REAR_PHOTORESISTOR))->get()) << std::endl;
 }
 
 bool HungerChangeMagnitudeController::process()

@@ -18,6 +18,9 @@
 #include "../../operation_mode/include/OperationMode.hpp"
 #include "../../operation_mode/include/CurrentOperationModeConstants.hpp"
 
+#include "../../awareness/include/SurroundingsAnalysis.hpp"
+#include "../../awareness/include/SurroundingsAnalysisConstants.hpp"
+
 #include "../../common/include/SerialCommunicator.hpp"
 
 /*

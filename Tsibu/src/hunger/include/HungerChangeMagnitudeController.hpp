@@ -1,9 +1,6 @@
 #ifndef TSIBU_HUNGER_CHANGE_MAGNITUDE_CONTROLLER_HPP
 #define TSIBU_HUNGER_CHANGE_MAGNITUDE_CONTROLLER_HPP
 
-#include <iostream>
-#include <exception>
-
 #include "../../common/include/FSMController.hpp"
 #include "HungerChangeMagnitude.hpp"
 #include "HungerChangeMagnitudeConstants.hpp"
@@ -58,7 +55,7 @@ class HungerChangeMagnitudeController : public FSMController<HungerChangeMagnitu
 
 		/*
 		 *  The destructor.
-		 *  Cleans up the GPIO containers.
+		 *  Does nothing.
 		 */
 		~HungerChangeMagnitudeController();
 };

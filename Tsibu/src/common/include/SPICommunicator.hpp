@@ -9,7 +9,8 @@
 
 /*
  *  This class is dedicated to creating a connection to and allowing for communication with a SPI device.
- *  This is accomplished through the SPI tools in the WiringPi library.
+ *  This is accomplished through the SPI tools in the WiringPi library, and this is done to get more
+ *  experience in using external libraries.
  */
 class SPICommunicator
 {
