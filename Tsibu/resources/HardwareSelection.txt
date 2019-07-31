@@ -1,5 +1,5 @@
 #
-# Updated 07/17
+# Updated 07/23
 #
 
 #
@@ -40,7 +40,7 @@ Arrived
 
 https://www.adafruit.com/product/856
 MCP3008 - 8-Channel 10-Bit ADC with SPI Interface (x3)
-Ordered
+Arrived
 
 #
 # Still Needed

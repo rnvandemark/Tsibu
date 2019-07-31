@@ -4,33 +4,71 @@ void CurrentMovementDirectionController::init()
 {
 	fsm->set_current_state(new MovementDirection(MovementDirection::NONE));
 	
-	update_inputs();
-}
-
-void CurrentMovementDirectionController::update_inputs()
-{
 	fsm->set_variable<std::chrono::system_clock::time_point>(
 		CURRENT_MOVEMENT_DIRECTION_VARIABLE_STATE_STATIC_UNTIL,
 		new std::chrono::system_clock::time_point(std::chrono::system_clock::now())
 	);
 }
 
+void CurrentMovementDirectionController::update_inputs()
+{
+	// Do nothing
+}
+
 bool CurrentMovementDirectionController::process()
 {
 	MovementDirection current_state = *(fsm->get_current_state());
-	MovementDirection next_state = MovementDirection::NONE;
+	MovementDirection next_state;
 	
 	std::chrono::system_clock::time_point time_now = std::chrono::system_clock::now();
-	if (time_now > dynamic_cast<FSMVariable<std::chrono::system_clock::time_point>*>(fsm->get_variable(CURRENT_MOVEMENT_DIRECTION_VARIABLE_STATE_STATIC_UNTIL))->get())
+	if (time_now > dynamic_cast<FSMVariable<std::chrono::system_clock::time_point>*>(
+		fsm->get_variable(CURRENT_MOVEMENT_DIRECTION_VARIABLE_STATE_STATIC_UNTIL)
+	)->get())
 	{
+		next_state = MovementDirection::NONE;
+		
 		OperationMode current_operation_mode = *(dynamic_cast<FSM<OperationMode>*>(
 			fsm_system_communicator->get_base_FSM(CURRENT_OPERATION_MODE_FSM_NAME)
 		)->get_current_state());
 		
+		bool is_not_hungry = (current_operation_mode == OperationMode::IDLE) || (current_operation_mode == OperationMode::EXPLORING);
+		
 		switch(current_operation_mode)
 		{
+			case OperationMode::IDLE:
+			case OperationMode::EXPLORING:
 			case OperationMode::FINDING_FOOD:
 			{
+				SurroundingsAnalysis current_surroundings_analysis = *(dynamic_cast<FSM<SurroundingsAnalysis>*>(
+					fsm_system_communicator->get_base_FSM(SURROUNDINGS_ANALYSIS_FSM_NAME)
+				)->get_current_state());
+				
+				if (current_surroundings_analysis == SurroundingsAnalysis::KINETIC_OBJECT_IS_TOO_CLOSE)
+				{
+					if (current_state == MovementDirection::NONE)
+					{
+						next_state = MovementDirection::REVERSE;
+					}
+					else
+					{
+						next_state = MovementDirection::NONE;
+					}
+					
+					fsm->set_variable<std::chrono::system_clock::time_point>(
+						CURRENT_MOVEMENT_DIRECTION_VARIABLE_STATE_STATIC_UNTIL,
+						new std::chrono::system_clock::time_point(
+							time_now + std::chrono::milliseconds(CURRENT_MOVEMENT_DIRECTION_BACK_UP_TIME_MILLISECONDS)
+						)
+					);
+					
+					break;
+				}
+				
+				if (is_not_hungry)
+				{
+					break;
+				}
+				
 				HungerChangeMagnitude current_hunger_change_magnitude = *(dynamic_cast<FSM<HungerChangeMagnitude>*>(
 					fsm_system_communicator->get_base_FSM(HUNGER_CHANGE_MAGNITUDE_FSM_NAME)
 				)->get_current_state());
@@ -111,14 +149,18 @@ bool CurrentMovementDirectionController::process()
 					}
 				}
 				
+				fsm->set_variable<std::chrono::system_clock::time_point>(
+					CURRENT_MOVEMENT_DIRECTION_VARIABLE_STATE_STATIC_UNTIL,
+					new std::chrono::system_clock::time_point(time_now)
+				);
+				
 				break;
 			}
 		}
-		
-		fsm->set_variable<std::chrono::system_clock::time_point>(
-			CURRENT_MOVEMENT_DIRECTION_VARIABLE_STATE_STATIC_UNTIL,
-			new std::chrono::system_clock::time_point(time_now)
-		);
+	}
+	else
+	{
+		next_state = current_state;
 	}
 	
 	fsm->set_current_state(new MovementDirection(next_state));

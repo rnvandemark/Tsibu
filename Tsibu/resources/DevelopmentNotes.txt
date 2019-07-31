@@ -11,14 +11,11 @@ Python code for a stepper motor
 https://pimylifeup.com/raspberry-pi-light-sensor/
 Hooking up photoresistors
 
-https://www.pololu.com/file/0J713/GP2Y0A41SK0F.pdf
-2Y0A41SK0F depth sensor
-
 http://www.sharp-world.com/products/device/lineup/data/pdf/datasheet/gp2y0a21yk_e.pdf
-GP2Y0A21YK0f depth sensor (shorter range)
+GP2Y0A21YK0F depth sensor (longer range)
 
 https://www.pololu.com/file/0J713/GP2Y0A41SK0F.pdf
-2Y0A41SK0F depth sensor (longer range)
+2Y0A41SK0F depth sensor (shorter range)
 
 https://www.piborg.org/blog/diddyborg-v2-build-instructions
 Tsibu assembly

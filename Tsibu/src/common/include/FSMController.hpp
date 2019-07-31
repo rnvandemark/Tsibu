@@ -49,6 +49,13 @@ class FSMController
 			while (true)
 			{
 				time_sleep_start = std::chrono::system_clock::now();
+				
+				update_inputs();
+				if (process())
+				{
+					std::cout << "[" << name << "] State changed to " << static_cast<int>(*(fsm->get_current_state())) << std::endl;
+				}
+				
 				while (
 					std::chrono::duration_cast<std::chrono::milliseconds>(
 						std::chrono::system_clock::now() - time_sleep_start
@@ -62,12 +69,10 @@ class FSMController
 
 					std::this_thread::sleep_for(std::chrono::milliseconds(5));
 				}
-
-				update_inputs();
 				
-				if (process())
+				if (!keep_spin_routine_alive)
 				{
-					std::cout << "[" << name << "] State changed to " << static_cast<int>(*(fsm->get_current_state())) << std::endl;
+					return;
 				}
 			}
 		}
